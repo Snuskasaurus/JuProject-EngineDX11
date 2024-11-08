@@ -22,8 +22,9 @@ struct float3
 
 struct SVertex
 {
-    float3 Position;
-    float2 TextureCoordinate;
+    float3 vp;
+    float3 vn;
+    float2 vt;
 };
 
 struct SVertexBuffer

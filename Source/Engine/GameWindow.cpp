@@ -17,7 +17,8 @@
 
 namespace dx = DirectX;
 
-#define GAME_DATA_PATH L"E:/Perso/JuProject/Game/Data/"
+#define GAME_DATA_PATH L"D:/Projects/JuProject/Game/Data/" // 1st PC
+//#define GAME_DATA_PATH L"E:/Perso/JuProject/Game/Data/" // 2nd PC
 
 //---------------------------------------------------------------------------------------------------------------------------------------------------------
 // Window
