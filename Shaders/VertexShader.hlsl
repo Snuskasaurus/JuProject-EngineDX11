@@ -1,6 +1,13 @@
 struct VSOut
 {
-    float2 texCoord : TexCoord;
+    float3 position : Position;
+    float3 normal : Normal;
+    float2 texCoord : TexCoord0;
+};
+
+struct VSOut
+{
+    float2 texCoord : TexCoord0;
     float4 position : SV_Position;
 };
 
@@ -9,7 +16,7 @@ cbuffer CBuffer
     matrix transform;
 }
 
-VSOut main(float3 position : Position, float2 texCoord: TexCoord)
+VSOut main(float3 position : Position, float3 normal : Normal, float2 texCoord : TexCoord0)
 {
     VSOut vso;
     vso.texCoord = texCoord;

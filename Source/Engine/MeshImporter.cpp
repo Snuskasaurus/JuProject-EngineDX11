@@ -17,7 +17,7 @@ struct SFaceElement
     TVertexIndex Normal = 0;
 };
 
-bool TryToImportMeshInfoFromOBJFile(_In_ const wchar_t* _fileName, _Out_ SMeshInfo* SMeshInfo)
+bool TryToImportMeshInfoFromOBJFile(_In_ const wchar_t* _fileName, _Out_ SMeshInfo* MeshInfo)
 {
     FILE* fileStream = nullptr;
 
@@ -108,7 +108,6 @@ bool TryToImportMeshInfoFromOBJFile(_In_ const wchar_t* _fileName, _Out_ SMeshIn
             nbFaces += 3;
         }
     }
-
     int SuccessFClose = fclose(fileStream);
     if (SuccessFClose)
     {
@@ -116,14 +115,24 @@ bool TryToImportMeshInfoFromOBJFile(_In_ const wchar_t* _fileName, _Out_ SMeshIn
         return false;
     }
     
-    // // Copy face buffer | Texture Coordinate
-    // size_t sizeFaceBuffer = sizeof(TVertexIndex) * nbIndex;
-    // memcpy(SMeshInfo->IndexBuffer.Indexes, tempVertexIndex, sizeFaceBuffer);
-    // for (int iIndexBuffer = 0; iIndexBuffer < nbIndex; ++iIndexBuffer)
-    // {
-    //     SMeshInfo->IndexBuffer.Indexes[iIndexBuffer] -= 1;
-    // }
-    // SMeshInfo->nbIndexBuffer = nbIndex;
+    for (int i = 0; i < nbFaces; ++i)
+    {
+        const int iVertexPos = tempFaces[i].Geometry;
+        assert(iVertexPos <= nbVertexPos);
+        MeshInfo->VertexBuffer.Vertices[i].vp = tempVertexPos[iVertexPos];
+
+		const int iVertexTex = tempFaces[i].Texture;
+		assert(iVertexTex <= nbVertexTex);
+        MeshInfo->VertexBuffer.Vertices[i].vt = tempVertexTex[iVertexTex];
+
+		const int iVertexNorm = tempFaces[i].Normal;
+		assert(iVertexNorm <= nbVertexNorm);
+        MeshInfo->VertexBuffer.Vertices[i].vn = tempVertexNorm[iVertexNorm];
+
+		MeshInfo->IndexBuffer.Indexes[i] = static_cast<TVertexIndex>(i);
+    }
+    MeshInfo->nbVertexBuffer = nbFaces;
+    MeshInfo->nbIndexBuffer = nbFaces;
     
     return true;
 }

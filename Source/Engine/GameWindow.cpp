@@ -17,8 +17,9 @@
 
 namespace dx = DirectX;
 
-#define GAME_DATA_PATH L"D:/Projects/JuProject/Game/Data/" // 1st PC
-//#define GAME_DATA_PATH L"E:/Perso/JuProject/Game/Data/" // 2nd PC
+//#define GAME_DATA_PATH L"D:/Projects/JuProject/Game/Data/" // 1st PC
+#define GAME_DATA_PATH L"E:/Perso/JuProject/Game/Data/" // 2nd PC
+#define MESH_TO_IMPORT L"Cube.obj"
 
 //---------------------------------------------------------------------------------------------------------------------------------------------------------
 // Window
@@ -237,7 +238,7 @@ JuProject::SExitResult JuProject::HandleGameWindowMessage()
 void DrawCube(const float xOffset, const float yOffset,  const float zOffset, const float Angle)
 {
     SMeshInfo meshInfoCube = {};
-    bool successImportingMesh = TryToImportMeshInfoFromOBJFile(GAME_DATA_PATH L"Suzanne.obj", &meshInfoCube);
+    bool successImportingMesh = TryToImportMeshInfoFromOBJFile(GAME_DATA_PATH MESH_TO_IMPORT, &meshInfoCube);
     assert(successImportingMesh);
  
     // Create Vertex Buffer and bind it to the pipeline
@@ -326,14 +327,15 @@ void DrawCube(const float xOffset, const float yOffset,  const float zOffset, co
         DXImmediateContext->VSSetShader(vertexShader, nullptr, 0u);
         vertexShader->Release();
 
-        // Input Layout for 2d vertex
+        // Input Layout for 3d vertex
         {
             ID3D11InputLayout* inputLayout;
             constexpr D3D11_INPUT_ELEMENT_DESC inputElementDesc[] =
             {
-                { "Position", 0u, DXGI_FORMAT_R32G32B32_FLOAT, 0u, D3D11_APPEND_ALIGNED_ELEMENT,D3D11_INPUT_PER_VERTEX_DATA, 0u },
-                { "TexCoord",0,DXGI_FORMAT_R32G32_FLOAT,0,24,D3D11_INPUT_PER_VERTEX_DATA,0 },
-            };
+                { "Position",  0u,  DXGI_FORMAT_R32G32B32_FLOAT,  0u,  D3D11_APPEND_ALIGNED_ELEMENT,  D3D11_INPUT_PER_VERTEX_DATA, 0u },
+                { "Normal",    0u,  DXGI_FORMAT_R32G32B32_FLOAT,  0u,  D3D11_APPEND_ALIGNED_ELEMENT,  D3D11_INPUT_PER_VERTEX_DATA, 0u },
+                { "TexCoord",  0u,  DXGI_FORMAT_R32G32_FLOAT,     0u,  D3D11_APPEND_ALIGNED_ELEMENT,  D3D11_INPUT_PER_VERTEX_DATA, 0u },
+				};
             UINT sizeInputElementDesc = 2u;
             CHECK_HRESULT(DXDevice->CreateInputLayout(inputElementDesc, sizeInputElementDesc, vsBlob->GetBufferPointer(), vsBlob->GetBufferSize(), &inputLayout));
             DXImmediateContext->IASetInputLayout(inputLayout);
