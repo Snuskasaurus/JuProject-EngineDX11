@@ -2,13 +2,17 @@
 
 // Highly inspired by http://www.opengl-tutorial.org/beginners-tutorials/tutorial-7-model-loading/
 
+
+#define MAX_NB_V 1024
+#define MAX_NB_VN 1024
+#define MAX_NB_VT 4096
+#define MAX_NB_F 4096
+
 #define TRIGGER_ERROR() assert(false) // TODO Julien Rogel (06/11/2024): Replace with MessageBox
 
 #include <assert.h>
 #include <cstdio>
 #include <cstring>
-
-#define MAX_FACE_ELEMENT 4096
 
 struct SFaceElement
 {
@@ -44,18 +48,18 @@ bool TryToImportMeshInfoFromOBJFile(_In_ const wchar_t* _fileName, _Out_ SMeshIn
         return false;
     }
     
-    int nbVertexPos = 0;
-    float3 tempVertexPos[MAX_VERTEX_BUFFER_VERTICES] = {};
-
-    int nbVertexNorm = 0;
-    float3 tempVertexNorm[MAX_VERTEX_BUFFER_VERTICES] = {};
+    int countV = 0;
+    float3 arrayV[MAX_NB_V] = {};
     
-    int nbVertexTex = 0;
-    float2 tempVertexTex[MAX_VERTEX_BUFFER_VERTICES] = {};
-
-    SFaceElement tempFaces[MAX_FACE_ELEMENT] = {};
-    int nbFaces = 0;
-
+    int countVN = 0;
+    float3 arrayVN[MAX_NB_VN] = {};
+    
+    int countVT = 0;
+    float2 arrayVT[MAX_NB_VT] = {};
+    
+    int countF = 0;
+    SFaceElement arrayF[MAX_NB_F] = {};
+    
     bool ReadingFile = true;
     while(ReadingFile)
     {
@@ -68,62 +72,51 @@ bool TryToImportMeshInfoFromOBJFile(_In_ const wchar_t* _fileName, _Out_ SMeshIn
         
         if (strcmp(lineHeader, "v") == 0) // Read vertex position
         {
-            if (nbVertexPos + 1 > MAX_VERTEX_BUFFER_VERTICES)
-            {
-                TRIGGER_ERROR();
-                return false;
-            }
-            
             const int matches = fscanf_s(fileStream, "%f %f %f\n",
-                &tempVertexPos[nbVertexPos].x,
-                &tempVertexPos[nbVertexPos].y,
-                &tempVertexPos[nbVertexPos].z);
-            nbVertexPos++;
+                &arrayV[countV].x,
+                &arrayV[countV].y,
+                &arrayV[countV].z);
+            arrayV[countV].z = arrayV[countV].z * -1.0f;
+
+            countV++;
+            assert(countV < MAX_NB_V);
         }
         else if (strcmp(lineHeader, "vn") == 0) // Read vertex normals
         {
-            if (nbVertexNorm + 1 > MAX_VERTEX_BUFFER_VERTICES)
-            {
-                TRIGGER_ERROR();
-                return false;
-            }
-            
             const int matches = fscanf_s(fileStream, "%f %f %f\n",
-                &tempVertexNorm[nbVertexNorm].x,
-                &tempVertexNorm[nbVertexNorm].y,
-                &tempVertexNorm[nbVertexNorm].z);
-            nbVertexNorm++;
+                &arrayVN[countVN].x,
+                &arrayVN[countVN].y,
+                &arrayVN[countVN].z);
+            arrayVN[countVN].z = arrayVN[countVN].z * -1.0f;
+
+            countVN++;
+            assert(countVN < MAX_NB_VN);
         }
         else if (strcmp(lineHeader, "vt") == 0) // Read vertex texture coordinates
         {
-            if (nbVertexTex + 1 > MAX_VERTEX_BUFFER_VERTICES)
-            {
-                TRIGGER_ERROR();
-                return false;
-            }
             const int matches = fscanf_s(fileStream, "%f %f\n",
-                &tempVertexTex[nbVertexTex].x,
-                &tempVertexTex[nbVertexTex].y);
-            nbVertexTex++;
+                &arrayVT[countVT].y,
+                &arrayVT[countVT].x);
+            arrayVT[countVT].y = 1.0f - arrayVT[countVT].y;
+
+            countVT++;
+            assert(countVT < MAX_NB_VT);
         }
         else if (strcmp(lineHeader, "f") == 0) // Read faces informations
         {
-            if (nbFaces + 3 > MAX_INDEX_BUFFER_INDEXES)
-            {
-                TRIGGER_ERROR();
-                return false;
-            }
-            int matches = fscanf_s(fileStream, "%hu/%hu/%hu %hu/%hu/%hu %hu/%hu/%hu\n",
-                &tempFaces[nbFaces ].Geometry,      &tempFaces[nbFaces].Texture,        &tempFaces[nbFaces].Normal,
-                &tempFaces[nbFaces + 1].Geometry,   &tempFaces[nbFaces + 1].Texture,    &tempFaces[nbFaces + 1].Normal,
-                &tempFaces[nbFaces + 2].Geometry,   &tempFaces[nbFaces + 2].Texture,    &tempFaces[nbFaces + 2].Normal);
+            const int matches = fscanf_s(fileStream, "%hu/%hu/%hu %hu/%hu/%hu %hu/%hu/%hu\n",
+                  &arrayF[countF + 2].Geometry, &arrayF[countF + 2].Texture, &arrayF[countF + 2].Normal,
+                  &arrayF[countF + 1].Geometry, &arrayF[countF + 1].Texture, &arrayF[countF + 1].Normal,
+                  &arrayF[countF + 0].Geometry, &arrayF[countF + 0].Texture, &arrayF[countF + 0].Normal);
+
+            countF += 3;
+            assert(countF < MAX_NB_F);
             
             if (matches != 9)
             {
                 TRIGGER_ERROR(); // TODO Julien Rogel (06/11/2024): Need to re-write this parser if it happens
                 return false;
             }
-            nbFaces += 3;
         }
     }
     int SuccessFClose = fclose(fileStream);
@@ -133,29 +126,31 @@ bool TryToImportMeshInfoFromOBJFile(_In_ const wchar_t* _fileName, _Out_ SMeshIn
         return false;
     }
 
-    struct SLastVerticesInfo
+    struct SUniqueFaceElement
     {
         int VertexPos = 0;
         int VertexTex = 0;
         int VertexNorm = 0;
         bool IsSame(int InVertexPos, int InVertexTex, int InVertexNorm) const { return InVertexPos == VertexPos && InVertexTex == VertexTex && InVertexNorm == VertexNorm; }
     };
+    SUniqueFaceElement arrayUniqueF[MAX_NB_F] = {};
     
-    SLastVerticesInfo LastVerticesInfo[MAX_VERTEX_BUFFER_VERTICES];
-    int LastVertex = 0;
-    for (int i = 0; i < nbFaces; ++i)
+    int LastVertexIndex = 0;
+    for (int iFace = 0; iFace < countF; ++iFace)
     {
-        const int iVertexPos = tempFaces[i].Geometry - 1;
-        assert(iVertexPos < nbVertexPos);
-		const int iVertexTex = tempFaces[i].Texture - 1;
-		assert(iVertexTex < nbVertexTex);
-		const int iVertexNorm = tempFaces[i].Normal - 1;
-		assert(iVertexNorm < nbVertexNorm);
+        const int iVertexPos = arrayF[iFace].Geometry - 1;
+        assert(iVertexPos < countV);
+        
+		const int iVertexTex = arrayF[iFace].Texture - 1;
+		assert(iVertexTex < countVT);
+        
+		const int iVertexNorm = arrayF[iFace].Normal - 1;
+		assert(iVertexNorm < countVN);
 
         bool AllReadyExist = false;
-        for (int iCheck = 0; iCheck <= LastVertex; ++iCheck)
+        for (int iCheck = 0; iCheck <= LastVertexIndex; ++iCheck)
         {
-            if (LastVerticesInfo[iCheck].IsSame(iVertexPos, iVertexTex, iVertexNorm) == true)
+            if (arrayUniqueF[iCheck].IsSame(iVertexPos, iVertexTex, iVertexNorm) == true)
             {
                 AddToIndexBuffer(MeshInfo, static_cast<TVertexIndex>(iCheck));
                 AllReadyExist = true;
@@ -164,10 +159,10 @@ bool TryToImportMeshInfoFromOBJFile(_In_ const wchar_t* _fileName, _Out_ SMeshIn
         }
         if (AllReadyExist == false)
         {
-            AddToVertexBuffer(MeshInfo, tempVertexPos[iVertexPos], tempVertexTex[iVertexTex], tempVertexNorm[iVertexNorm]);
-            LastVerticesInfo[LastVertex] = { iVertexPos, iVertexTex, iVertexNorm };
-            AddToIndexBuffer(MeshInfo, static_cast<TVertexIndex>(LastVertex));
-            LastVertex++;
+            AddToVertexBuffer(MeshInfo, arrayV[iVertexPos], arrayVT[iVertexTex], arrayVN[iVertexNorm]);
+            arrayUniqueF[LastVertexIndex] = { iVertexPos, iVertexTex, iVertexNorm };
+            AddToIndexBuffer(MeshInfo, static_cast<TVertexIndex>(LastVertexIndex));
+            LastVertexIndex++;
         }
     }
     

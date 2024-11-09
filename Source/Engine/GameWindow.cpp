@@ -20,9 +20,9 @@ namespace dx = DirectX;
 #define GAME_DATA_PATH L"D:/Projects/JuProject/Game/Data/" // 1st PC
 //#define GAME_DATA_PATH L"E:/Perso/JuProject/Game/Data/" // 2nd PC
 
-//#define MESH_TO_IMPORT L"Cube"
+#define MESH_TO_IMPORT L"Cube"
 //#define MESH_TO_IMPORT L"Suzanne"
-#define MESH_TO_IMPORT L"Square"
+//#define MESH_TO_IMPORT L"Square"
 
 //---------------------------------------------------------------------------------------------------------------------------------------------------------
 // Window
@@ -181,10 +181,12 @@ LRESULT CALLBACK GameWindowProcedure(HWND hWnd, UINT msg, WPARAM wParam, LPARAM 
             
             if (wParam == 'Q') AngleZShape += 0.05f;
             if (wParam == 'E') AngleZShape -= 0.05f;
+            
             if (wParam == 'W') AngleXShape += 0.05f;
-            if (wParam == 'A') AngleYShape -= 0.05f;
             if (wParam == 'S') AngleXShape -= 0.05f;
-            if (wParam == 'D') AngleYShape += 0.05f;
+            
+            if (wParam == 'D') AngleYShape -= 0.05f;
+            if (wParam == 'A') AngleYShape += 0.05f;
             
             if (wParam == 'R') rr > 0.0f ? rr = 0.0f : rr = 1.0f;
             if (wParam == 'G') gg > 0.0f ? gg = 0.0f : gg = 1.0f;
@@ -307,8 +309,8 @@ void DrawCube(const float xOffset, const float yOffset,  const float zOffset, co
         } constantBufferData =
         {
             dx::XMMatrixTranspose(
-                dx::XMMatrixRotationZ(AngleX) 
-                * dx::XMMatrixRotationX(AngleY)
+                  dx::XMMatrixRotationX(AngleX)
+                * dx::XMMatrixRotationY(AngleY) 
                 * dx::XMMatrixRotationZ(AngleZ) 
                 * dx::XMMatrixScaling(0.45f, 0.45f, 0.45f)
                 * dx::XMMatrixTranslation(xOffset, yOffset, zOffset)
