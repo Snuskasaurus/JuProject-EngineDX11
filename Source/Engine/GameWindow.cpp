@@ -20,8 +20,8 @@ namespace dx = DirectX;
 #define GAME_DATA_PATH L"D:/Projects/JuProject/Game/Data/" // 1st PC
 //#define GAME_DATA_PATH L"E:/Perso/JuProject/Game/Data/" // 2nd PC
 
-#define MESH_TO_IMPORT L"Cube"
-//#define MESH_TO_IMPORT L"Suzanne"
+//#define MESH_TO_IMPORT L"Cube"
+#define MESH_TO_IMPORT L"Suzanne"
 //#define MESH_TO_IMPORT L"Square"
 
 //---------------------------------------------------------------------------------------------------------------------------------------------------------

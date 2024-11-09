@@ -4,7 +4,7 @@
 
 
 #define MAX_NB_V 1024
-#define MAX_NB_VN 1024
+#define MAX_NB_VN 2048
 #define MAX_NB_VT 4096
 #define MAX_NB_F 4096
 
@@ -41,8 +41,8 @@ bool TryToImportMeshInfoFromOBJFile(_In_ const wchar_t* _fileName, _Out_ SMeshIn
 {
     FILE* fileStream = nullptr;
 
-    const errno_t resultFOpen = _wfopen_s(&fileStream, _fileName, L"r");
-    if(resultFOpen != 0 || fileStream == nullptr)
+    const errno_t resultFileOpen = _wfopen_s(&fileStream, _fileName, L"r");
+    if(resultFileOpen != 0 || fileStream == nullptr)
     {
         TRIGGER_ERROR(); // Failed to open file
         return false;
@@ -95,8 +95,8 @@ bool TryToImportMeshInfoFromOBJFile(_In_ const wchar_t* _fileName, _Out_ SMeshIn
         else if (strcmp(lineHeader, "vt") == 0) // Read vertex texture coordinates
         {
             const int matches = fscanf_s(fileStream, "%f %f\n",
-                &arrayVT[countVT].y,
-                &arrayVT[countVT].x);
+                &arrayVT[countVT].x,
+                &arrayVT[countVT].y);
             arrayVT[countVT].y = 1.0f - arrayVT[countVT].y;
 
             countVT++;
@@ -119,8 +119,8 @@ bool TryToImportMeshInfoFromOBJFile(_In_ const wchar_t* _fileName, _Out_ SMeshIn
             }
         }
     }
-    int SuccessFClose = fclose(fileStream);
-    if (SuccessFClose)
+    const int successFileClose = fclose(fileStream);
+    if (successFileClose)
     {
         TRIGGER_ERROR();
         return false;
@@ -128,39 +128,35 @@ bool TryToImportMeshInfoFromOBJFile(_In_ const wchar_t* _fileName, _Out_ SMeshIn
 
     struct SUniqueFaceElement
     {
-        int VertexPos = 0;
-        int VertexTex = 0;
-        int VertexNorm = 0;
-        bool IsSame(int InVertexPos, int InVertexTex, int InVertexNorm) const { return InVertexPos == VertexPos && InVertexTex == VertexTex && InVertexNorm == VertexNorm; }
+        int V = 0;
+        int VT = 0;
+        int VN = 0;
+        bool IsSame(int inV, int inVT, int inVN) const { return (inV == V) && (inVT == VT) && (inVN == VN); } // Check Normal ??
+        //bool IsSame(int inV, int inVT, int inVN) const { return (inV == V) && (inVT == VT); }
     };
     SUniqueFaceElement arrayUniqueF[MAX_NB_F] = {};
     
     int LastVertexIndex = 0;
     for (int iFace = 0; iFace < countF; ++iFace)
     {
-        const int iVertexPos = arrayF[iFace].Geometry - 1;
-        assert(iVertexPos < countV);
-        
-		const int iVertexTex = arrayF[iFace].Texture - 1;
-		assert(iVertexTex < countVT);
-        
-		const int iVertexNorm = arrayF[iFace].Normal - 1;
-		assert(iVertexNorm < countVN);
+        const int indexV = arrayF[iFace].Geometry - 1;
+		const int indexVT = arrayF[iFace].Texture - 1;
+		const int indexVN = arrayF[iFace].Normal - 1;
 
-        bool AllReadyExist = false;
+        bool vertexIsADuplicate = false;
         for (int iCheck = 0; iCheck <= LastVertexIndex; ++iCheck)
         {
-            if (arrayUniqueF[iCheck].IsSame(iVertexPos, iVertexTex, iVertexNorm) == true)
+            if (arrayUniqueF[iCheck].IsSame(indexV, indexVT, indexVN) == true)
             {
                 AddToIndexBuffer(MeshInfo, static_cast<TVertexIndex>(iCheck));
-                AllReadyExist = true;
+                vertexIsADuplicate = true;
                 break;
             }
         }
-        if (AllReadyExist == false)
+        if (vertexIsADuplicate == false)
         {
-            AddToVertexBuffer(MeshInfo, arrayV[iVertexPos], arrayVT[iVertexTex], arrayVN[iVertexNorm]);
-            arrayUniqueF[LastVertexIndex] = { iVertexPos, iVertexTex, iVertexNorm };
+            AddToVertexBuffer(MeshInfo, arrayV[indexV], arrayVT[indexVT], arrayVN[indexVN]);
+            arrayUniqueF[LastVertexIndex] = { indexV, indexVT, indexVN };
             AddToIndexBuffer(MeshInfo, static_cast<TVertexIndex>(LastVertexIndex));
             LastVertexIndex++;
         }
