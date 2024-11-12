@@ -8,10 +8,12 @@
 #include <d3dcompiler.h>
 #include <DirectXMath.h>
 #include <dxgiformat.h>
-#include <iterator>
 
+#include "Math.h"
 #include "Color.h"
+
 #include "HResultHandler.h"
+
 #include "MeshImporter.h"
 #include "WICTextureLoader.h"
 
@@ -301,14 +303,16 @@ void DrawCube(const float xOffset, const float yOffset,  const float zOffset, co
     
     // Create a vertex shader constant buffer with the transformation matrix and bind it to the pipeline
     {
-        struct SMatrix
-        {
-            float values[4][4];
-        };
         struct SConstantBuffer
         {
             dx::XMMATRIX transform; 
-        } constantBufferData =
+        };
+
+        TMatrix4f WorldMatrix = TMatrix4f::FromDirectXMatrix(dx::XMMatrixIdentity() * dx::XMMatrixTranslation(xOffset, yOffset, zOffset));
+
+        assert(WorldMatrix.x.x >= 1.0f);
+        
+        SConstantBuffer constantBufferData =
         {
             dx::XMMatrixTranspose(
                   dx::XMMatrixRotationX(AngleX)
@@ -365,7 +369,7 @@ void DrawCube(const float xOffset, const float yOffset,  const float zOffset, co
 
     __declspec(align(16)) struct SWorldLight
     {
-        float3 Direction = {0.37f, 0.93f, 0.0};
+        TVector3f Direction = {0.37f, 0.93f, 0.0};
         float Ambient = 0.0f;
     };
     
@@ -471,7 +475,6 @@ void JuProject::DoFrame(const float dt)
 
     static float AngleShape = 0.0f;
     AngleShape += 0.25f * dt;
-    
     //DrawCube(0.0f, 0.0f, 4.0f, AngleShape, AngleShape, AngleShape);
 
     float XPositionCube = (XPositionCursor / WindowSizeX * 2.0f) - 1.0f;

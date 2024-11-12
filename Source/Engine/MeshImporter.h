@@ -1,6 +1,7 @@
 ﻿#pragma once
 
 #include <sal.h>
+#include "Math.h"
 
 #define MAX_VERTEX_BUFFER_VERTICES 4096
 #define MAX_INDEX_BUFFER_INDEXES 4096
@@ -9,22 +10,9 @@ using TVertexIndex = unsigned short;
 
 struct alignas(16) SVertex
 {
-    float x = 0.0f;
-    float y = 0.0f;
-};
-
-struct float3
-{
-    float x = 0.0f;
-    float y = 0.0f;
-    float z = 0.0f;
-};
-
-struct SVertex
-{
-    float3 vp;
-    float2 vt;
-    float3 vn;
+    TVector3f vp;
+    TVector2f vt;
+    TVector3f vn;
 };
 
 struct alignas(16) SVertexBuffer
