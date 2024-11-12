@@ -7,7 +7,7 @@
 
 using TVertexIndex = unsigned short;
 
-struct float2
+struct alignas(16) SVertex
 {
     float x = 0.0f;
     float y = 0.0f;
@@ -27,12 +27,12 @@ struct SVertex
     float3 vn;
 };
 
-struct SVertexBuffer
+struct alignas(16) SVertexBuffer
 {
     SVertex Vertices[MAX_VERTEX_BUFFER_VERTICES];
 };
 
-struct IndexBuffer
+struct alignas(16) IndexBuffer
 {
     TVertexIndex Indexes[MAX_INDEX_BUFFER_INDEXES];
 };
