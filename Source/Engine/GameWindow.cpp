@@ -1,4 +1,4 @@
-﻿#include "GameWindow.h"
+#include "GameWindow.h"
 
 #include <Windows.h>
 #include <Windowsx.h>
@@ -25,8 +25,8 @@ namespace dx = DirectX;
 //#define MESH_TO_IMPORT L"Square"
 //#define MESH_TO_IMPORT L"Cube"
 //#define MESH_TO_IMPORT L"Sphere"
-//#define MESH_TO_IMPORT L"Suzanne"
-#define MESH_TO_IMPORT L"Crate"
+#define MESH_TO_IMPORT L"Suzanne"
+//#define MESH_TO_IMPORT L"Crate"
 
 //---------------------------------------------------------------------------------------------------------------------------------------------------------
 // Window
@@ -39,7 +39,7 @@ constexpr int DefaultWindowPositionX = 320;
 constexpr int DefaultWindowPositionY = 150;
 constexpr int WindowSizeX = 1680;
 constexpr int WindowSizeY = 600;
-float ScreenRatio = (float)WindowSizeY / (float)WindowSizeX;
+float ScreenRatio = (float)WindowSizeX / (float)WindowSizeY;
 //---------------------------------------------------------------------------------------------------------------------------------------------------------
 // DirectX
 //---------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -305,25 +305,24 @@ void DrawCube(const float xOffset, const float yOffset,  const float zOffset, co
     {
         struct SConstantBuffer
         {
-            dx::XMMATRIX transform; 
+            dx::XMMATRIX WorldViewProjection; 
         };
 
-        TMatrix4f WorldMatrix = TMatrix4f::FromDirectXMatrix(dx::XMMatrixIdentity() * dx::XMMatrixTranslation(xOffset, yOffset, zOffset));
-
-        assert(WorldMatrix.x.x >= 1.0f);
+        dx::FXMVECTOR CameraEyePosition = dx::XMVectorSet( 0.0f, 0.0f, -0.05f, 0.0f );
+        dx::FXMVECTOR CameraTargetPosition = dx::XMVectorSet( 0.0f, 0.0f, 0.0f, 0.0f );
+        dx::FXMVECTOR CameraUpDirection = dx::XMVectorSet( 0.0f, 1.0f, 0.0f, 0.0f );
         
-        SConstantBuffer constantBufferData =
-        {
-            dx::XMMatrixTranspose(
-                  dx::XMMatrixRotationX(AngleX)
-                * dx::XMMatrixRotationY(AngleY) 
-                * dx::XMMatrixRotationZ(AngleZ) 
-                * dx::XMMatrixScaling(0.45f, 0.45f, 0.45f)
-                * dx::XMMatrixTranslation(xOffset, yOffset, zOffset)
-                * dx::XMMatrixPerspectiveLH(1.0f, ScreenRatio, 0.5f, 1000.0f)
-                )
-        };
-    
+        DirectX::XMMATRIX World = dx::XMMatrixIdentity();
+        DirectX::XMMATRIX Rotation = dx::XMMatrixRotationX(AngleX) * dx::XMMatrixRotationY(AngleY) * dx::XMMatrixRotationZ(AngleZ);
+        DirectX::XMMATRIX Translation = dx::XMMatrixTranslation(xOffset, yOffset, zOffset);
+        World = Rotation * Translation;
+            
+        DirectX::XMMATRIX CameraView = dx::XMMatrixLookAtRH(CameraEyePosition, CameraTargetPosition, CameraUpDirection);
+        DirectX::XMMATRIX CameraProjection = dx::XMMatrixPerspectiveFovRH(0.4f * 3.14f, ScreenRatio, 0.0001f, 1000.0f);
+
+        SConstantBuffer constantBufferData;
+        constantBufferData.WorldViewProjection = dx::XMMatrixTranspose(World * CameraView * CameraProjection);
+        
         D3D11_BUFFER_DESC bufferDesc = {};
         bufferDesc.Usage = D3D11_USAGE_DYNAMIC;
         bufferDesc.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
@@ -352,14 +351,14 @@ void DrawCube(const float xOffset, const float yOffset,  const float zOffset, co
 
         // Input Layout for 3d vertex
         {
-            ID3D11InputLayout* inputLayout;
             constexpr D3D11_INPUT_ELEMENT_DESC inputElementDesc[] =
             {
                 { "POSITION",  0u,  DXGI_FORMAT_R32G32B32_FLOAT,  0u,  D3D11_APPEND_ALIGNED_ELEMENT,  D3D11_INPUT_PER_VERTEX_DATA, 0u },
                 { "UV",  0u,  DXGI_FORMAT_R32G32_FLOAT,     0u,  D3D11_APPEND_ALIGNED_ELEMENT,  D3D11_INPUT_PER_VERTEX_DATA, 0u },
                 { "NORMAL",    0u,  DXGI_FORMAT_R32G32B32_FLOAT,  0u,  D3D11_APPEND_ALIGNED_ELEMENT,  D3D11_INPUT_PER_VERTEX_DATA, 0u },
-				};
+                };
             UINT sizeInputElementDesc = 3u;
+            ID3D11InputLayout* inputLayout;
             CHECK_HRESULT(DXDevice->CreateInputLayout(inputElementDesc, sizeInputElementDesc, vsBlob->GetBufferPointer(), vsBlob->GetBufferSize(), &inputLayout));
             DXImmediateContext->IASetInputLayout(inputLayout);
             inputLayout->Release();
@@ -431,15 +430,34 @@ void DrawCube(const float xOffset, const float yOffset,  const float zOffset, co
         samplerDesc.AddressU = D3D11_TEXTURE_ADDRESS_BORDER;
         samplerDesc.AddressV = D3D11_TEXTURE_ADDRESS_BORDER;
         samplerDesc.AddressW = D3D11_TEXTURE_ADDRESS_BORDER;
-        samplerDesc.BorderColor[0] = TFloatColor::Magenta.r;
-        samplerDesc.BorderColor[1] = TFloatColor::Magenta.g;
-        samplerDesc.BorderColor[2] = TFloatColor::Magenta.b;
-        samplerDesc.BorderColor[3] = TFloatColor::Magenta.a;
+        samplerDesc.BorderColor[0] = SColor::Magenta.ToFloat().r;
+        samplerDesc.BorderColor[1] = SColor::Magenta.ToFloat().g;
+        samplerDesc.BorderColor[2] = SColor::Magenta.ToFloat().b;
+        samplerDesc.BorderColor[3] = 1.0f;
         
         ID3D11SamplerState* samplerState = nullptr;
         CHECK_HRESULT(DXDevice->CreateSamplerState(&samplerDesc, &samplerState));
         DXImmediateContext->PSSetSamplers(0, 1, &samplerState);
     }
+
+    {
+        D3D11_RASTERIZER_DESC rasterizerDesc = {};
+        rasterizerDesc.AntialiasedLineEnable = true;
+        rasterizerDesc.CullMode = D3D11_CULL_BACK;
+        rasterizerDesc.DepthBias = 0;
+        rasterizerDesc.DepthBiasClamp = 0.0f;
+        rasterizerDesc.DepthClipEnable = true;
+        rasterizerDesc.FillMode = D3D11_FILL_SOLID;
+        rasterizerDesc.FrontCounterClockwise = true;
+        rasterizerDesc.MultisampleEnable = false;
+        rasterizerDesc.ScissorEnable = false;
+        rasterizerDesc.SlopeScaledDepthBias = 0.0f;
+    
+        ID3D11RasterizerState* rasterizerState = nullptr;
+        CHECK_HRESULT(DXDevice->CreateRasterizerState(&rasterizerDesc, &rasterizerState));
+        DXImmediateContext->RSSetState(rasterizerState);
+    }
+
     
     // Configure Viewport
     {
@@ -452,7 +470,6 @@ void DrawCube(const float xOffset, const float yOffset,  const float zOffset, co
         viewport.MaxDepth = 1.0f;
         DXImmediateContext->RSSetViewports(1u, &viewport);
     }
-
     DXImmediateContext->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
     DXImmediateContext->DrawIndexed(meshInfo.nbIndexBuffer,  0u, 0);
 }
@@ -479,7 +496,7 @@ void JuProject::DoFrame(const float dt)
 
     float XPositionCube = (XPositionCursor / WindowSizeX * 2.0f) - 1.0f;
     float YPositionCube = -(YPositionCursor / WindowSizeY * 2.0f) + 1.0f;
-    DrawCube(XPositionCube, YPositionCube, 4.0f + ZPositionCube, AngleXShape, AngleYShape, AngleZShape);
+    DrawCube(0.0f, 0.0f, 4.0f + ZPositionCube, AngleXShape, AngleYShape, AngleZShape);
     
     EndFrame();
 }
