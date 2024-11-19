@@ -10,6 +10,8 @@ void CompileShader(LPCWSTR FileName, const char* Target, ID3DBlob** ShaderOut)
 {
     UINT flags1 = 0;
     UINT flags2 = 0;
+
+    flags1 |= D3DCOMPILE_PACK_MATRIX_COLUMN_MAJOR;
     
 #ifdef _DEBUG
     flags1 |= D3DCOMPILE_DEBUG;
