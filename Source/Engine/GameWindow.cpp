@@ -344,7 +344,7 @@ void DrawCube(const float xOffset, const float yOffset,  const float zOffset, co
     // Create VertexShader and bind it to the pipeline
     {
         ID3DBlob* vsBlob = nullptr;
-        CompileShader(GAME_DATA_SHADER_PATH L"VertexShader.hlsl", vsBlob);
+        CompileShader(GAME_DATA_SHADER_PATH L"VertexShader.hlsl", "vs_5_0", &vsBlob);
         //CHECK_HRESULT(D3DReadFileToBlob(, &vsBlob));
         ID3D11VertexShader* vertexShader = nullptr;
         CHECK_HRESULT(DXDevice->CreateVertexShader(vsBlob->GetBufferPointer(), vsBlob->GetBufferSize(), nullptr, &vertexShader));
@@ -406,7 +406,7 @@ void DrawCube(const float xOffset, const float yOffset,  const float zOffset, co
     // Create PixelShader and bind it to the pipeline
     {
         ID3DBlob* psBlob = nullptr;
-        CompileShader(GAME_DATA_SHADER_PATH L"PixelShader.hlsl", psBlob);
+        CompileShader(GAME_DATA_SHADER_PATH L"PixelShader.hlsl", "ps_5_0", &psBlob);
         //CHECK_HRESULT(D3DReadFileToBlob(L".cso", &psBlob));
         ID3D11PixelShader* pixelShader = nullptr;
         CHECK_HRESULT(DXDevice->CreatePixelShader(psBlob->GetBufferPointer(), psBlob->GetBufferSize(), nullptr, &pixelShader));
