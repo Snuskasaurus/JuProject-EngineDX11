@@ -9,9 +9,39 @@ const TMatrix4f TMatrix4f::Identity =
     {0.0f, 1.0f, 0.0f, 0.0f},
     {0.0f, 0.0f, 1.0f, 0.0f},
     {0.0f, 0.0f, 0.0f, 1.0f},
-};;
+};
 //---------------------------------------------------------------------------------------------------------------------------------------------------------
-TMatrix4f TMatrix4f::PerspectiveLH(const TMatrix4f _matrix)
+TMatrix4f TMatrix4f::MatrixRotationX(float x)
+{
+    return {};
+}
+//---------------------------------------------------------------------------------------------------------------------------------------------------------
+TMatrix4f TMatrix4f::MatrixRotationY(float y)
+{
+    return {};
+}
+//---------------------------------------------------------------------------------------------------------------------------------------------------------
+TMatrix4f TMatrix4f::MatrixRotationZ(float z)
+{
+    return {};
+}
+//---------------------------------------------------------------------------------------------------------------------------------------------------------
+TMatrix4f TMatrix4f::MatrixTranslation(TVector3f translation)
+{
+    return {};
+}
+//---------------------------------------------------------------------------------------------------------------------------------------------------------
+TMatrix4f TMatrix4f::MatrixScale(float scale)
+{
+    return {};
+}
+//---------------------------------------------------------------------------------------------------------------------------------------------------------
+TMatrix4f TMatrix4f::MatrixLookAtRH(TVector3f EyePosition, TVector3f FocusPosition, TVector3f UpDirection)
+{
+    return {};
+}
+//---------------------------------------------------------------------------------------------------------------------------------------------------------
+TMatrix4f TMatrix4f::MatrixPerspectiveFovRH(float FovAngleY, float AspectRatio, float NearZ, float FarZ)
 {
     return {};
 }
@@ -25,7 +55,7 @@ TMatrix4f TMatrix4f::Transpose(const TMatrix4f _matrix)
     _matrix.x.w, _matrix.y.w, _matrix.z.w, _matrix.w.w,
     };
 }
-
+//---------------------------------------------------------------------------------------------------------------------------------------------------------
 dx::XMMATRIX TMatrix4f::ToDirectXMatrix(const TMatrix4f _matrix)
 {
     return DirectX::XMMATRIX(
@@ -35,7 +65,7 @@ dx::XMMATRIX TMatrix4f::ToDirectXMatrix(const TMatrix4f _matrix)
         _matrix.w.x, _matrix.w.y, _matrix.w.z, _matrix.w.w
         );
 }
-
+//---------------------------------------------------------------------------------------------------------------------------------------------------------
 TMatrix4f TMatrix4f::FromDirectXMatrix(const dx::XMMATRIX _matrix)
 {
     TMatrix4f matrix;

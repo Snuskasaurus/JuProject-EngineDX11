@@ -145,29 +145,8 @@
     </FxCompile>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <FxCompile Include="Shaders\PixelShader.hlsl">
-      <ObjectFileOutput>D:\Projects\JuProject\%(Filename).cso</ObjectFileOutput>
-      <TrackerLogDirectory>x64\Debug\JuProject.tlog\</TrackerLogDirectory>
-      <EntryPointName>main</EntryPointName>
-      <SuppressStartupBanner>true</SuppressStartupBanner>
-      <ShaderModel>4.0_level_9_3</ShaderModel>
-      <MinimalRebuildFromTracking>true</MinimalRebuildFromTracking>
-      <DisableOptimizations>true</DisableOptimizations>
-      <EnableDebuggingInformation>true</EnableDebuggingInformation>
-      <FileType>Document</FileType>
-      <ShaderType>Vertex</ShaderType>
-      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Pixel</ShaderType>
-      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Pixel</ShaderType>
-      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">5.0</ShaderModel>
-      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Release|x64'">5.0</ShaderModel>
-    </FxCompile>
-    <FxCompile Include="Shaders\VertexShader.hlsl">
-      <FileType>Document</FileType>
-      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Vertex</ShaderType>
-      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Vertex</ShaderType>
-      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">5.0</ShaderModel>
-      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Release|x64'">5.0</ShaderModel>
-    </FxCompile>
+    <Content Include="Game\Data\Shaders\PixelShader.hlsl" />
+    <Content Include="Game\Data\Shaders\VertexShader.hlsl" />
     <ClCompile Include="Source\Engine\Color.cpp" />
     <ClCompile Include="Source\Engine\GameWindow.cpp">
       <AssemblerOutput>NoListing</AssemblerOutput>
@@ -322,6 +301,7 @@
       <LinkCompiled>true</LinkCompiled>
     </ClCompile>
     <ClCompile Include="Source\Engine\MeshImporter.cpp" />
+    <ClCompile Include="Source\Engine\Shaders.cpp" />
     <ClCompile Include="Source\Engine\WICTextureLoader.cpp">
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
@@ -479,6 +459,7 @@
     <ClInclude Include="Source\Engine\HResultHandler.h" />
     <ClInclude Include="Source\Engine\Math.h" />
     <ClInclude Include="Source\Engine\MeshImporter.h" />
+    <ClInclude Include="Source\Engine\Shaders.h" />
     <ClInclude Include="Source\Engine\WICTextureLoader.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

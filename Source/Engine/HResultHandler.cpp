@@ -6,10 +6,10 @@
 #include <codecvt>
 #include <locale>
 
-void HandleHResultError(const int line, const char* filename, const HRESULT HResult) noexcept
+bool HandleHResultError(const int line, const char* filename, const HRESULT HResult) noexcept
 {
     if (HResult == 0)
-        return;
+        return true;
 
     size_t size = strlen(filename) + 1;  
     wchar_t* FilenameWideChar = new wchar_t[size]; 
@@ -25,4 +25,6 @@ void HandleHResultError(const int line, const char* filename, const HRESULT HRes
     delete[] FilenameWideChar;
 
     MessageBox(nullptr, StringErrorWideChar,L"JuProject HResultError Handler" ,MB_OK | MB_ICONEXCLAMATION);
+    
+    return false;
 }

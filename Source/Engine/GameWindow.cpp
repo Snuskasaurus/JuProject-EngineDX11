@@ -15,12 +15,13 @@
 #include "HResultHandler.h"
 
 #include "MeshImporter.h"
+#include "Shaders.h"
 #include "WICTextureLoader.h"
 
 namespace dx = DirectX;
 
-#define GAME_DATA_PATH L"D:/Projects/JuProject/Game/Data/" // 1st PC
-//#define GAME_DATA_PATH L"E:/Perso/JuProject/Game/Data/" // 2nd PC
+#define GAME_DATA_PATH L"Game/Data/"
+#define GAME_DATA_SHADER_PATH L"Game/Data/Shaders/"
 
 //#define MESH_TO_IMPORT L"Square"
 //#define MESH_TO_IMPORT L"Cube"
@@ -343,7 +344,8 @@ void DrawCube(const float xOffset, const float yOffset,  const float zOffset, co
     // Create VertexShader and bind it to the pipeline
     {
         ID3DBlob* vsBlob = nullptr;
-        CHECK_HRESULT(D3DReadFileToBlob(L"VertexShader.cso", &vsBlob));
+        CompileShader(GAME_DATA_SHADER_PATH L"VertexShader.hlsl", vsBlob);
+        //CHECK_HRESULT(D3DReadFileToBlob(, &vsBlob));
         ID3D11VertexShader* vertexShader = nullptr;
         CHECK_HRESULT(DXDevice->CreateVertexShader(vsBlob->GetBufferPointer(), vsBlob->GetBufferSize(), nullptr, &vertexShader));
         DXImmediateContext->VSSetShader(vertexShader, nullptr, 0u);
@@ -404,7 +406,8 @@ void DrawCube(const float xOffset, const float yOffset,  const float zOffset, co
     // Create PixelShader and bind it to the pipeline
     {
         ID3DBlob* psBlob = nullptr;
-        CHECK_HRESULT(D3DReadFileToBlob(L"PixelShader.cso", &psBlob));
+        CompileShader(GAME_DATA_SHADER_PATH L"PixelShader.hlsl", psBlob);
+        //CHECK_HRESULT(D3DReadFileToBlob(L".cso", &psBlob));
         ID3D11PixelShader* pixelShader = nullptr;
         CHECK_HRESULT(DXDevice->CreatePixelShader(psBlob->GetBufferPointer(), psBlob->GetBufferSize(), nullptr, &pixelShader));
         psBlob->Release();
