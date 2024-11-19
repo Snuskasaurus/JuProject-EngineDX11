@@ -32,18 +32,11 @@ struct alignas(16) TMatrix4f
     
     static const TMatrix4f Identity;
 
+    static TMatrix4f MatrixTranslation(TVector3f translation);
     static TMatrix4f MatrixRotationX(float x); 
     static TMatrix4f MatrixRotationY(float y); 
     static TMatrix4f MatrixRotationZ(float z); 
-    static TMatrix4f MatrixTranslation(TVector3f translation); 
     static TMatrix4f MatrixScale(float scale);
     
-    static TMatrix4f MatrixLookAtRH(TVector3f EyePosition, TVector3f FocusPosition, TVector3f UpDirection); 
-    static TMatrix4f MatrixPerspectiveFovRH(float FovAngleY, float AspectRatio, float NearZ, float FarZ); 
-    
-    static inline TMatrix4f PerspectiveLH(const TMatrix4f _matrix);
     static inline TMatrix4f Transpose(const TMatrix4f _matrix);
-
-    static DirectX::XMMATRIX ToDirectXMatrix(const TMatrix4f _matrix);
-    static TMatrix4f FromDirectXMatrix(const DirectX::XMMATRIX _matrix);
 };
