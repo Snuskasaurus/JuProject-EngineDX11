@@ -1,8 +1,21 @@
 ﻿#include "Math.h"
 #include <cmath>
 
-namespace dx = DirectX;
-
+//---------------------------------------------------------------------------------------------------------------------------------------------------------
+float TVector2f::Dot(TVector2f v1, TVector2f v2)
+{
+    return v1.x * v2.x + v1.y * v2.y;
+}
+//---------------------------------------------------------------------------------------------------------------------------------------------------------
+float TVector3f::Dot(TVector3f v1, TVector3f v2)
+{
+    return v1.x * v2.x + v1.y * v2.y + v1.z * v2.z;
+}
+//---------------------------------------------------------------------------------------------------------------------------------------------------------
+float TVector4f::Dot(TVector4f v1, TVector4f v2)
+{
+    return v1.x * v2.x + v1.y * v2.y + v1.z * v2.z + v1.w * v2.w;
+}
 //---------------------------------------------------------------------------------------------------------------------------------------------------------
 const TMatrix4f TMatrix4f::Identity =
 {
@@ -67,14 +80,36 @@ TMatrix4f TMatrix4f::MatrixScale(float scale)
     };
 }
 //---------------------------------------------------------------------------------------------------------------------------------------------------------
-TMatrix4f TMatrix4f::Transpose(const TMatrix4f _matrix)
+TMatrix4f TMatrix4f::MatrixScaleUniform(float scale)
 {
     return
-    {
-        _matrix.x.x,    _matrix.y.x,    _matrix.z.x,    _matrix.w.x,
-        _matrix.x.y,    _matrix.y.y,    _matrix.z.y,    _matrix.w.y,
-        _matrix.x.z,    _matrix.y.z,    _matrix.z.z,    _matrix.w.z,
-        _matrix.x.w,    _matrix.y.w,    _matrix.z.w,    _matrix.w.w,
+    {                                                                  
+        0.0f,            0.0f,          0.0f,           0.0f ,
+        0.0f,            0.0f,          0.0f,           0.0f ,
+        0.0f,            0.0f,          0.0f,           0.0f ,
+        0.0f,            0.0f,          0.0f,           1.0f / scale ,
     };
 }
 //---------------------------------------------------------------------------------------------------------------------------------------------------------
+TMatrix4f TMatrix4f::Transpose(const TMatrix4f& m)
+{
+    return
+    {
+        m.x.x,  m.y.x,  m.z.x,  m.w.x,
+        m.x.y,  m.y.y,  m.z.y,  m.w.y,
+        m.x.z,  m.y.z,  m.z.z,  m.w.z,
+        m.x.w,  m.y.w,  m.z.w,  m.w.w,
+    };
+}
+//---------------------------------------------------------------------------------------------------------------------------------------------------------
+TMatrix4f TMatrix4f::Multiply(const TMatrix4f& m1, const TMatrix4f& m2)
+{
+    TMatrix4f tm2 = TMatrix4f::Transpose(m2);
+    return
+    {
+        TVector4f::Dot(m1.x, tm2.x),    TVector4f::Dot(m1.x, tm2.y),    TVector4f::Dot(m1.x, tm2.z),    TVector4f::Dot(m1.x, tm2.w),
+        TVector4f::Dot(m1.y, tm2.x),    TVector4f::Dot(m1.y, tm2.y),    TVector4f::Dot(m1.y, tm2.z),    TVector4f::Dot(m1.y, tm2.w),
+        TVector4f::Dot(m1.z, tm2.x),    TVector4f::Dot(m1.z, tm2.y),    TVector4f::Dot(m1.z, tm2.z),    TVector4f::Dot(m1.z, tm2.w),
+        TVector4f::Dot(m1.w, tm2.x),    TVector4f::Dot(m1.w, tm2.y),    TVector4f::Dot(m1.w, tm2.z),    TVector4f::Dot(m1.w, tm2.w),
+    };
+}
