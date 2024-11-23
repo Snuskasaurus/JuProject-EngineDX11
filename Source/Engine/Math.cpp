@@ -2,21 +2,6 @@
 #include <cmath>
 
 //---------------------------------------------------------------------------------------------------------------------------------------------------------
-float TVector2f::Dot(TVector2f v1, TVector2f v2)
-{
-    return v1.x * v2.x + v1.y * v2.y;
-}
-//---------------------------------------------------------------------------------------------------------------------------------------------------------
-float TVector3f::Dot(TVector3f v1, TVector3f v2)
-{
-    return v1.x * v2.x + v1.y * v2.y + v1.z * v2.z;
-}
-//---------------------------------------------------------------------------------------------------------------------------------------------------------
-float TVector4f::Dot(TVector4f v1, TVector4f v2)
-{
-    return v1.x * v2.x + v1.y * v2.y + v1.z * v2.z + v1.w * v2.w;
-}
-//---------------------------------------------------------------------------------------------------------------------------------------------------------
 const TMatrix4f TMatrix4f::Identity =
 {
     { 1.0f, 0.0f, 0.0f, 0.0f },
@@ -88,6 +73,26 @@ TMatrix4f TMatrix4f::MatrixScaleUniform(float scale)
         0.0f,            0.0f,          0.0f,           0.0f ,
         0.0f,            0.0f,          0.0f,           0.0f ,
         0.0f,            0.0f,          0.0f,           1.0f / scale ,
+    };
+}
+//---------------------------------------------------------------------------------------------------------------------------------------------------------
+TMatrix4f TMatrix4f::MatrixLookAtRH(TVector3f CameraPosition, TVector3f LookAtPosition, TVector3f UpVector)
+{
+    TVector3f t = CameraPosition;
+    TVector3f v = CameraPosition - LookAtPosition;
+    TVector3f r = {};
+    TVector3f u = TVector3f::Cross(v, r);
+
+    assert(v.IsNormalized());
+    assert(r.IsNormalized());
+    assert(u.IsNormalized());
+
+    return
+    {
+        r.x,            r.y,           r.z,          TVector3f::Dot(-t, r),
+        u.x,            u.y,           u.z,          TVector3f::Dot(-t, u),
+        v.x,            v.y,           v.z,          TVector3f::Dot(-t, v),
+        0.0f,            0.0f,           0.0f,          1.0f,
     };
 }
 //---------------------------------------------------------------------------------------------------------------------------------------------------------
