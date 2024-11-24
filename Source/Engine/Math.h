@@ -39,7 +39,12 @@ struct TVector3f
     }
     FORCE_INLINE static TVector3f Cross(const TVector3f& _v1, const TVector3f& _v2)
     {
-        return { };
+        return
+        {
+            _v1.y * _v2.z - _v1.z * _v2.y,
+            _v1.x * _v2.z - _v1.z * _v2.x,
+            _v1.x * _v2.y - _v1.y * _v2.x,
+        };
     }
     FORCE_INLINE static float SquareLength(const TVector3f& _v)
     {
