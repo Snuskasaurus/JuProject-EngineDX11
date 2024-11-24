@@ -1,11 +1,22 @@
 ﻿#include "Math.h"
 
 #include <cmath>
+#include <cassert>
 
 //---------------------------------------------------------------------------------------------------------------------------------------------------------
-float TVector3f::Length(const TVector3f& v1)
+float Math::Square(const float _f)
 {
-    return sqrtf(SquareLength(v1));
+    return sqrtf(_f);
+}
+//---------------------------------------------------------------------------------------------------------------------------------------------------------
+float Math::Sin(const float _f)
+{
+    return sinf(_f);
+}
+//---------------------------------------------------------------------------------------------------------------------------------------------------------
+float Math::Cos(const float _f)
+{
+    return cosf(_f);
 }
 //---------------------------------------------------------------------------------------------------------------------------------------------------------
 const TMatrix4f TMatrix4f::Identity =
@@ -16,77 +27,77 @@ const TMatrix4f TMatrix4f::Identity =
     { 0.0f, 0.0f, 0.0f, 1.0f },
 };
 //---------------------------------------------------------------------------------------------------------------------------------------------------------
-TMatrix4f TMatrix4f::MatrixTranslation(TVector3f translation)
+TMatrix4f TMatrix4f::MatrixTranslation(const TVector3f& _translation)
 {
     return
     {
-        1.0f,            0.0f,           0.0f,          translation.x,
-        0.0f,            1.0f,           0.0f,          translation.y,
-        0.0f,            0.0f,           1.0f,          translation.z,
+        1.0f,            0.0f,           0.0f,          _translation.x,
+        0.0f,            1.0f,           0.0f,          _translation.y,
+        0.0f,            0.0f,           1.0f,          _translation.z,
         0.0f,            0.0f,           0.0f,          1.0f,
     };
 }
 //---------------------------------------------------------------------------------------------------------------------------------------------------------
-TMatrix4f TMatrix4f::MatrixRotationX(float angle)
+TMatrix4f TMatrix4f::MatrixRotationX(float _angle)
 {
     return
     {
         1.0f,            0.0f,          0.0f,           0.0f,
-        0.0f,            cos(angle),    -sinf(angle),   0.0f,
-        0.0f,            sinf(angle),   cos(angle),     0.0f,
+        0.0f,            cos(_angle),    -sinf(_angle),   0.0f,
+        0.0f,            sinf(_angle),   cos(_angle),     0.0f,
         0.0f,            0.0f,          0.0f,           1.0f,
     };
 }
 //---------------------------------------------------------------------------------------------------------------------------------------------------------
-TMatrix4f TMatrix4f::MatrixRotationY(float angle)
+TMatrix4f TMatrix4f::MatrixRotationY(float _angle)
 {
     return
     {
-        cos(angle),      0.0f,          sinf(angle),    0.0f,
+        cos(_angle),      0.0f,          sinf(_angle),    0.0f,
         0.0f,            1.0f,          0.0f,           0.0f,
-        -sinf(angle),    0.0f,          cos(angle),     0.0f,
+        -sinf(_angle),    0.0f,          cos(_angle),     0.0f,
         0.0f,            0.0f,          1.0f,           0.0f,
     };
 }
 //---------------------------------------------------------------------------------------------------------------------------------------------------------
-TMatrix4f TMatrix4f::MatrixRotationZ(float angle)
+TMatrix4f TMatrix4f::MatrixRotationZ(float _angle)
 {
     return
     {
-        cos(angle),      -sinf(angle),  0.0f,           0.0f,
-        sinf(angle),     cos(angle),    0.0f,           0.0f,
+        cos(_angle),      -sinf(_angle),  0.0f,           0.0f,
+        sinf(_angle),     cos(_angle),    0.0f,           0.0f,
         0.0f,            0.0f,          1.0f,           0.0f,
         0.0f,            0.0f,          0.0f,           1.0f,
     };
 }
 //---------------------------------------------------------------------------------------------------------------------------------------------------------
-TMatrix4f TMatrix4f::MatrixScale(float scale)
+TMatrix4f TMatrix4f::MatrixScale(float _scale)
 {
     return
     {                                                                  
-        scale,           0.0f,          0.0f,           0.0f ,
-        0.0f,            scale,         0.0f,           0.0f ,
-        0.0f,            0.0f,          scale,          0.0f ,
+        _scale,           0.0f,          0.0f,           0.0f ,
+        0.0f,            _scale,         0.0f,           0.0f ,
+        0.0f,            0.0f,          _scale,          0.0f ,
         0.0f,            0.0f,          0.0f,           1.0f ,
     };
 }
 //---------------------------------------------------------------------------------------------------------------------------------------------------------
-TMatrix4f TMatrix4f::MatrixScaleUniform(float scale)
+TMatrix4f TMatrix4f::MatrixScaleUniform(float _scale)
 {
     return
     {                                                                  
         0.0f,            0.0f,          0.0f,           0.0f ,
         0.0f,            0.0f,          0.0f,           0.0f ,
         0.0f,            0.0f,          0.0f,           0.0f ,
-        0.0f,            0.0f,          0.0f,           1.0f / scale ,
+        0.0f,            0.0f,          0.0f,           1.0f / _scale ,
     };
 }
-//---------------------------------------------------------------------------------------------------------------------------------------------------------
-TMatrix4f TMatrix4f::MatrixLookAtRH(TVector3f cameraPosition, TVector3f lookAtPosition, TVector3f up)
+
+TMatrix4f TMatrix4f::MatrixLookAtRH(const TVector3f& _cameraPosition, const TVector3f& _lookAtPosition, const TVector3f& _up)
 {
-    TVector3f t = cameraPosition;
-    TVector3f v = TVector3f::Normalize(cameraPosition - lookAtPosition);
-    TVector3f r = -TVector3f::Normalize(TVector3f::Cross(v, up)); // Right vector
+    TVector3f t = _cameraPosition;
+    TVector3f v = TVector3f::Normalize(_cameraPosition - _lookAtPosition);
+    TVector3f r = -TVector3f::Normalize(TVector3f::Cross(v, _up)); // Right vector
     TVector3f u = TVector3f::Cross(v, r); // Guarantee that we have a vector pointing up
 
     assert(v.IsNormalized());
