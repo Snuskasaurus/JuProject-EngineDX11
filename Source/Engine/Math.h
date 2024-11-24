@@ -1,8 +1,7 @@
 ﻿#pragma once
 
 #define FORCE_INLINE __forceinline
-
-#include <DirectXMath.h>
+#define FLT_EPSILON 1.19209290E-07F
 
 //---------------------------------------------------------------------------------------------------------------------------------------------------------
 struct TVector2f
@@ -39,10 +38,7 @@ struct TVector3f
     {
         return v1.x + v1.y + v1.z;
     }
-    FORCE_INLINE static float Length(const TVector3f&  v1)
-    {
-        return sqrtf(SquareLength(v1));
-    }
+    FORCE_INLINE static float Length(const TVector3f&  v1);
     FORCE_INLINE static TVector3f Normalize(const TVector3f&  v1)
     {
         float Length = TVector3f::Length(v1);
