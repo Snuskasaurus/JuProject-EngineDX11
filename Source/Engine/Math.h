@@ -2,6 +2,7 @@
 
 #include <DirectXMath.h>
 
+//---------------------------------------------------------------------------------------------------------------------------------------------------------
 struct TVector2f
 {
     float x = 0.0f;
@@ -12,7 +13,7 @@ struct TVector2f
         return v1.x * v2.x + v1.y * v2.y;
     }
 };
-
+//---------------------------------------------------------------------------------------------------------------------------------------------------------
 struct TVector3f
 {
     float x = 0.0f;
@@ -74,7 +75,7 @@ struct TVector3f
         return lhs;
     }
 };
-
+//---------------------------------------------------------------------------------------------------------------------------------------------------------
 struct TVector4f
 {
     float x = 0.0f;
@@ -87,7 +88,7 @@ struct TVector4f
         return v1.x * v2.x + v1.y * v2.y + v1.z * v2.z + v1.w * v2.w;
     }
 };
-
+//---------------------------------------------------------------------------------------------------------------------------------------------------------
 struct alignas(16) TMatrix4f
 {
     TVector4f x;
@@ -97,14 +98,39 @@ struct alignas(16) TMatrix4f
 
     static const TMatrix4f Identity;
 
-    inline static TMatrix4f MatrixTranslation(TVector3f translation);
-    inline static TMatrix4f MatrixRotationX(float angle); 
-    inline static TMatrix4f MatrixRotationY(float angle); 
-    inline static TMatrix4f MatrixRotationZ(float angle); 
-    inline static TMatrix4f MatrixScale(float scale);
-    inline static TMatrix4f MatrixScaleUniform(float scale);
-    inline static TMatrix4f MatrixLookAtRH(TVector3f CameraPosition, TVector3f LookAtPosition, TVector3f UpVector);
+    __forceinline static TMatrix4f MatrixTranslation(TVector3f translation);
+    __forceinline static TMatrix4f MatrixRotationX(float angle); 
+    __forceinline static TMatrix4f MatrixRotationY(float angle); 
+    __forceinline static TMatrix4f MatrixRotationZ(float angle); 
+    __forceinline static TMatrix4f MatrixScale(float scale);
+    __forceinline static TMatrix4f MatrixScaleUniform(float scale);
+    __forceinline static TMatrix4f MatrixLookAtRH(TVector3f cameraPosition, TVector3f lookAtPosition, TVector3f up);
 
-    inline static TMatrix4f Transpose(const TMatrix4f& m);
-    inline static TMatrix4f Multiply(const TMatrix4f& m1, const TMatrix4f& m2);
+    __forceinline static TMatrix4f Transpose(const TMatrix4f& m)
+    {
+        return
+        {
+           m.x.x,  m.y.x,  m.z.x,  m.w.x,
+           m.x.y,  m.y.y,  m.z.y,  m.w.y,
+           m.x.z,  m.y.z,  m.z.z,  m.w.z,
+           m.x.w,  m.y.w,  m.z.w,  m.w.w,
+       };
+    }
+    
+    __forceinline TMatrix4f& operator*=(const TMatrix4f& rhs)
+    {
+        const TMatrix4f m1 = *this;
+        const TMatrix4f m2 = TMatrix4f::Transpose(rhs);
+        this->x = { TVector4f::Dot(m1.x, m2.x),    TVector4f::Dot(m1.x, m2.y),    TVector4f::Dot(m1.x, m2.z),    TVector4f::Dot(m1.x, m2.w) };
+        this->y = { TVector4f::Dot(m1.y, m2.x),    TVector4f::Dot(m1.y, m2.y),    TVector4f::Dot(m1.y, m2.z),    TVector4f::Dot(m1.y, m2.w) };
+        this->z = { TVector4f::Dot(m1.z, m2.x),    TVector4f::Dot(m1.z, m2.y),    TVector4f::Dot(m1.z, m2.z),    TVector4f::Dot(m1.z, m2.w) };
+        this->w = { TVector4f::Dot(m1.w, m2.x),    TVector4f::Dot(m1.w, m2.y),    TVector4f::Dot(m1.w, m2.z),    TVector4f::Dot(m1.w, m2.w) };
+        return *this;
+    }
+    __forceinline friend TMatrix4f operator*(TMatrix4f lhs, const TMatrix4f& rhs)
+    {
+        lhs *= rhs;
+        return lhs;
+    }
 };
+//---------------------------------------------------------------------------------------------------------------------------------------------------------

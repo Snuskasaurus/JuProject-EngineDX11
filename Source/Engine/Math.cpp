@@ -76,12 +76,12 @@ TMatrix4f TMatrix4f::MatrixScaleUniform(float scale)
     };
 }
 //---------------------------------------------------------------------------------------------------------------------------------------------------------
-TMatrix4f TMatrix4f::MatrixLookAtRH(TVector3f CameraPosition, TVector3f LookAtPosition, TVector3f UpVector)
+TMatrix4f TMatrix4f::MatrixLookAtRH(TVector3f cameraPosition, TVector3f lookAtPosition, TVector3f up)
 {
-    TVector3f t = CameraPosition;
-    TVector3f v = CameraPosition - LookAtPosition;
-    TVector3f r = {};
-    TVector3f u = TVector3f::Cross(v, r);
+    TVector3f t = cameraPosition;
+    TVector3f v = TVector3f::Normalize(cameraPosition - lookAtPosition);
+    TVector3f r = -TVector3f::Normalize(TVector3f::Cross(v, up)); // Right vector
+    TVector3f u = TVector3f::Cross(v, r); // Guarantee that we have a vector pointing up
 
     assert(v.IsNormalized());
     assert(r.IsNormalized());
@@ -96,25 +96,3 @@ TMatrix4f TMatrix4f::MatrixLookAtRH(TVector3f CameraPosition, TVector3f LookAtPo
     };
 }
 //---------------------------------------------------------------------------------------------------------------------------------------------------------
-TMatrix4f TMatrix4f::Transpose(const TMatrix4f& m)
-{
-    return
-    {
-        m.x.x,  m.y.x,  m.z.x,  m.w.x,
-        m.x.y,  m.y.y,  m.z.y,  m.w.y,
-        m.x.z,  m.y.z,  m.z.z,  m.w.z,
-        m.x.w,  m.y.w,  m.z.w,  m.w.w,
-    };
-}
-//---------------------------------------------------------------------------------------------------------------------------------------------------------
-TMatrix4f TMatrix4f::Multiply(const TMatrix4f& m1, const TMatrix4f& m2)
-{
-    TMatrix4f tm2 = TMatrix4f::Transpose(m2);
-    return
-    {
-        TVector4f::Dot(m1.x, tm2.x),    TVector4f::Dot(m1.x, tm2.y),    TVector4f::Dot(m1.x, tm2.z),    TVector4f::Dot(m1.x, tm2.w),
-        TVector4f::Dot(m1.y, tm2.x),    TVector4f::Dot(m1.y, tm2.y),    TVector4f::Dot(m1.y, tm2.z),    TVector4f::Dot(m1.y, tm2.w),
-        TVector4f::Dot(m1.z, tm2.x),    TVector4f::Dot(m1.z, tm2.y),    TVector4f::Dot(m1.z, tm2.z),    TVector4f::Dot(m1.z, tm2.w),
-        TVector4f::Dot(m1.w, tm2.x),    TVector4f::Dot(m1.w, tm2.y),    TVector4f::Dot(m1.w, tm2.z),    TVector4f::Dot(m1.w, tm2.w),
-    };
-}
