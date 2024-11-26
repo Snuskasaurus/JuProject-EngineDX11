@@ -54,7 +54,7 @@ ID3D11DepthStencilView* DXDepthStencilView = nullptr;
 //---------------------------------------------------------------------------------------------------------------------------------------------------------
 float rr, gg, bb = 0.0f;
 float XPositionCursor, YPositionCursor = 0.0f;
-float ZPositionCube = 0.0f;
+float ZOffsetPositionCamera = -5.0f;
 float AngleXShape = 0.0f;
 float AngleZShape = 0.0f;
 float AngleYShape = 0.0f;
@@ -200,7 +200,7 @@ LRESULT CALLBACK GameWindowProcedure(HWND hWnd, UINT msg, WPARAM wParam, LPARAM 
     case WM_MOUSEWHEEL:
         {
             short zDelta = GET_WHEEL_DELTA_WPARAM(wParam);
-            ZPositionCube += (float)zDelta * 0.0025f;
+            ZOffsetPositionCamera += (float)zDelta * 0.0025f;
         } break;
     }
     return DefWindowProc(hWnd, msg, wParam, lParam);
@@ -301,7 +301,7 @@ void DrawCube(const float xOffset, const float yOffset,  const float zOffset, co
         DXImmediateContext->IASetIndexBuffer(indexBuffer, DXGI_FORMAT_R16_UINT, 0u);
         indexBuffer->Release();
     }
-    
+
     // Create a vertex shader constant buffer with the transformation matrix and bind it to the pipeline
     {
         struct SConstantBuffer
@@ -309,21 +309,21 @@ void DrawCube(const float xOffset, const float yOffset,  const float zOffset, co
             dx::XMMATRIX WorldViewProjection; 
         };
 
-        dx::FXMVECTOR CameraEyePosition = dx::XMVectorSet( 0.0f, 0.0f, -0.05f, 0.0f );
+        dx::FXMVECTOR CameraEyePosition = dx::XMVectorSet( 0.0f, 0.0f, ZOffsetPositionCamera, 0.0f );
         dx::FXMVECTOR CameraTargetPosition = dx::XMVectorSet( 0.0f, 0.0f, 0.0f, 0.0f );
         dx::FXMVECTOR CameraUpDirection = dx::XMVectorSet( 0.0f, 1.0f, 0.0f, 0.0f );
-        
+
         DirectX::XMMATRIX World = dx::XMMatrixIdentity();
         DirectX::XMMATRIX Rotation = dx::XMMatrixRotationX(AngleX) * dx::XMMatrixRotationY(AngleY) * dx::XMMatrixRotationZ(AngleZ);
         DirectX::XMMATRIX Translation = dx::XMMatrixTranslation(xOffset, yOffset, zOffset);
         World = Rotation * Translation;
-            
+
         DirectX::XMMATRIX CameraView = dx::XMMatrixLookAtRH(CameraEyePosition, CameraTargetPosition, CameraUpDirection);
         DirectX::XMMATRIX CameraProjection = dx::XMMatrixPerspectiveFovRH(0.4f * 3.14f, ScreenRatio, 0.0001f, 1000.0f);
-
+ 
         SConstantBuffer constantBufferData;
         constantBufferData.WorldViewProjection = dx::XMMatrixTranspose(World * CameraView * CameraProjection);
-        
+
         D3D11_BUFFER_DESC bufferDesc = {};
         bufferDesc.Usage = D3D11_USAGE_DYNAMIC;
         bufferDesc.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
@@ -331,7 +331,7 @@ void DrawCube(const float xOffset, const float yOffset,  const float zOffset, co
         bufferDesc.MiscFlags = 0u;
         bufferDesc.ByteWidth = sizeof(constantBufferData);
         bufferDesc.StructureByteStride = 0u;
-        
+
         D3D11_SUBRESOURCE_DATA subResourceData = {};
         subResourceData.pSysMem = &constantBufferData;
         
@@ -499,7 +499,7 @@ void JuProject::DoFrame(const float dt)
 
     float XPositionCube = (XPositionCursor / WindowSizeX * 2.0f) - 1.0f;
     float YPositionCube = -(YPositionCursor / WindowSizeY * 2.0f) + 1.0f;
-    DrawCube(0.0f, 0.0f, 4.0f + ZPositionCube, AngleXShape, AngleYShape, AngleZShape);
+    DrawCube(0.0f, 0.0f, 0.0f, AngleXShape, AngleYShape, AngleZShape);
     
     EndFrame();
 }
