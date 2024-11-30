@@ -2,7 +2,7 @@
 
 #define FORCE_INLINE __forceinline
 #define EPSILON_FLOAT 1.19209290E-07F
-#define VEC_COMPARE_PRECISION 0.001
+#define VEC_PRECISION 0.0001
 
 #include <DirectXMath.h>
 
@@ -41,7 +41,7 @@ struct TVector3f
     FORCE_INLINE bool IsNormalized() const
     {
         const float squareLength = TVector3f::SquareLength(*this);
-        return squareLength >= 1.0f - EPSILON_FLOAT && squareLength <= 1.0f + EPSILON_FLOAT;
+        return squareLength >= 1.0f - VEC_PRECISION && squareLength <= 1.0f + VEC_PRECISION;
     }
     FORCE_INLINE static float Dot(const TVector3f& _v1, const TVector3f& _v2)
     {
@@ -58,7 +58,9 @@ struct TVector3f
     }
     FORCE_INLINE static float SquareLength(const TVector3f& _v)
     {
-        return _v.x + _v.y + _v.z;
+        return _v.x * _v.x
+             + _v.y * _v.y
+             + _v.z * _v.z;
     }
     FORCE_INLINE static float Length(const TVector3f& _v)
     {
@@ -114,7 +116,7 @@ struct TVector4f
     FORCE_INLINE friend bool operator==(const TVector4f& _v1, const TVector4f& _v2)
     {
         const float f = Math::Abs(_v1.x - _v2.x) + Math::Abs(_v1.y - _v2.y) + Math::Abs(_v1.z - _v2.z);
-        return f < VEC_COMPARE_PRECISION;
+        return f < VEC_PRECISION;
     }
     FORCE_INLINE TVector4f operator-() const
     {

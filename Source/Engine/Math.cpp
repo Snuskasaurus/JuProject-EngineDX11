@@ -129,7 +129,7 @@ TMatrix4f TMatrix4f::MatrixLookAtRH(const TVector3f& _cameraPosition, const TVec
     TVector3f t = _cameraPosition;
     TVector3f v = TVector3f::Normalize(_cameraPosition - _lookAtPosition);
     TVector3f r = -TVector3f::Normalize(TVector3f::Cross(v, _up)); // Right vector
-    TVector3f u = TVector3f::Cross(v, r); // Guarantee that we have a vector pointing up
+    TVector3f u = TVector3f::Normalize(TVector3f::Cross(v, r)); // Guarantee that we have a vector pointing up
 
     assert(v.IsNormalized());
     assert(r.IsNormalized());
@@ -140,7 +140,7 @@ TMatrix4f TMatrix4f::MatrixLookAtRH(const TVector3f& _cameraPosition, const TVec
         r.x,            r.y,           r.z,          TVector3f::Dot(-t, r),
         u.x,            u.y,           u.z,          TVector3f::Dot(-t, u),
         v.x,            v.y,           v.z,          TVector3f::Dot(-t, v),
-        0.0f,            0.0f,           0.0f,          1.0f,
+        0.0f,   0.0f,      0.0f,         1.0f,
     };
 }
 //----------------------------------------------------------------------------------------------------------------------
