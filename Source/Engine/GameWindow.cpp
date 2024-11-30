@@ -320,7 +320,7 @@ void DrawCube(const float xOffset, const float yOffset,  const float zOffset, co
 
         DirectX::XMMATRIX CameraView = dx::XMMatrixLookAtRH(CameraEyePosition, CameraTargetPosition, CameraUpDirection);
         DirectX::XMMATRIX CameraProjection = dx::XMMatrixPerspectiveFovRH(0.4f * 3.14f, ScreenRatio, 0.0001f, 1000.0f);
- 
+
         SConstantBuffer constantBufferData;
         constantBufferData.WorldViewProjection = dx::XMMatrixTranspose(World * CameraView * CameraProjection);
 

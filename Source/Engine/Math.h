@@ -3,6 +3,8 @@
 #define FORCE_INLINE __forceinline
 #define EPSILON_FLOAT 1.19209290E-07F
 
+#include <DirectXMath.h>
+
 //---------------------------------------------------------------------------------------------------------------------------------------------------------
 namespace Math // To avoid having CMath included everywhere
 {
@@ -100,6 +102,37 @@ struct TVector4f
     {
         return _v1.x * _v2.x + _v1.y * _v2.y + _v1.z * _v2.z + _v1.w * _v2.w;
     }
+    
+    FORCE_INLINE TVector4f operator-() const
+    {
+        return { -x, -y, -z };
+    }
+    FORCE_INLINE TVector4f& operator+=(const TVector4f& _v)
+    {
+        this->x += _v.x;
+        this->y += _v.y;
+        this->z += _v.z;
+        this->w += _v.w;
+        return *this;
+    }
+    FORCE_INLINE TVector4f& operator-=(const TVector4f& _v)
+    {
+        this->x -= _v.x;
+        this->y -= _v.y;
+        this->z -= _v.z;
+        this->w -= _v.w;
+        return *this;
+    }
+    FORCE_INLINE friend TVector4f operator+(TVector4f _v1, const TVector4f& _v2)
+    {
+        _v1 += _v2;
+        return _v1;
+    }
+    FORCE_INLINE friend TVector4f operator-(TVector4f _v1, const TVector4f& _v2)
+    {
+        _v1 += _v2;
+        return _v1;
+    }
 };
 //---------------------------------------------------------------------------------------------------------------------------------------------------------
 struct alignas(16) TMatrix4f
@@ -111,6 +144,9 @@ struct alignas(16) TMatrix4f
 
     static const TMatrix4f Identity;
 
+    static TMatrix4f FromDirectXMatrix(DirectX::XMMATRIX _matrix);
+    static bool CompareMatrixToDirectXMatrix(const TVector3f& _m1, DirectX::XMMATRIX _m2);
+    
     FORCE_INLINE static TMatrix4f MatrixTranslation(const TVector3f& _translation);
     FORCE_INLINE static TMatrix4f MatrixRotationX(float _angle); 
     FORCE_INLINE static TMatrix4f MatrixRotationY(float _angle); 
@@ -118,7 +154,8 @@ struct alignas(16) TMatrix4f
     FORCE_INLINE static TMatrix4f MatrixScale(float _scale);
     FORCE_INLINE static TMatrix4f MatrixScaleUniform(float _scale);
     FORCE_INLINE static TMatrix4f MatrixLookAtRH(const TVector3f& _cameraPosition, const TVector3f& _lookAtPosition, const TVector3f& _up);
-
+    FORCE_INLINE static TMatrix4f MatrixPerspectiveFovRH(float _fovAngleY, float _aspectRatio, float _nearZ, float _farZ);
+    
     FORCE_INLINE static TMatrix4f Transpose(const TMatrix4f& _m)
     {
         return
@@ -127,7 +164,7 @@ struct alignas(16) TMatrix4f
            _m.x.y,  _m.y.y,  _m.z.y,  _m.w.y,
            _m.x.z,  _m.y.z,  _m.z.z,  _m.w.z,
            _m.x.w,  _m.y.w,  _m.z.w,  _m.w.w,
-       };
+        };
     }
     
     FORCE_INLINE TMatrix4f& operator*=(const TMatrix4f& _m)
@@ -144,5 +181,13 @@ struct alignas(16) TMatrix4f
         _m1 *= _m2;
         return _m1;
     }
+	FORCE_INLINE TVector4f& operator*=(const TVector4f& _v)
+	{
+		
+	}
+	FORCE_INLINE friend TVector4f operator*(const TVector4f& _v)
+	{
+        
+	}
 };
 //---------------------------------------------------------------------------------------------------------------------------------------------------------
