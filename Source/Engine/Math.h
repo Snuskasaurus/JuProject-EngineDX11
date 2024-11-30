@@ -38,10 +38,10 @@ struct TVector3f
         return NewVec;
     }
     
-    FORCE_INLINE bool IsNormalized()
+    FORCE_INLINE bool IsNormalized() const
     {
         const float squareLength = TVector3f::SquareLength(*this);
-        return squareLength <= 1.0f - EPSILON_FLOAT && squareLength >= 1.0f + EPSILON_FLOAT;
+        return squareLength >= 1.0f - EPSILON_FLOAT && squareLength <= 1.0f + EPSILON_FLOAT;
     }
     FORCE_INLINE static float Dot(const TVector3f& _v1, const TVector3f& _v2)
     {
