@@ -18,6 +18,12 @@ float Math::Cos(const float _f)
 {
     return cosf(_f);
 }
+
+float Math::Abs(const float _f)
+{
+    return fabsf(_f);
+}
+
 //----------------------------------------------------------------------------------------------------------------------
 const TMatrix4f TMatrix4f::Identity =
 {
@@ -28,34 +34,28 @@ const TMatrix4f TMatrix4f::Identity =
 };
 TMatrix4f TMatrix4f::FromDirectXMatrix(const DirectX::XMMATRIX _matrix)
 {
-    TMatrix4f matrix;
-
-    matrix.x.x = DirectX::XMVectorGetX(_matrix.r[0]);
-    matrix.x.y = DirectX::XMVectorGetY(_matrix.r[0]);
-    matrix.x.z = DirectX::XMVectorGetZ(_matrix.r[0]);
-    matrix.x.w = DirectX::XMVectorGetW(_matrix.r[0]);
-    
-    matrix.y.x = DirectX::XMVectorGetX(_matrix.r[1]);
-    matrix.y.y = DirectX::XMVectorGetY(_matrix.r[1]);
-    matrix.y.z = DirectX::XMVectorGetZ(_matrix.r[1]);
-    matrix.y.w = DirectX::XMVectorGetW(_matrix.r[1]);
-    
-    matrix.z.x = DirectX::XMVectorGetX(_matrix.r[2]);
-    matrix.z.y = DirectX::XMVectorGetY(_matrix.r[2]);
-    matrix.z.z = DirectX::XMVectorGetZ(_matrix.r[2]);
-    matrix.z.w = DirectX::XMVectorGetW(_matrix.r[2]);
-    
-    matrix.w.x = DirectX::XMVectorGetX(_matrix.r[3]);
-    matrix.w.y = DirectX::XMVectorGetY(_matrix.r[3]);
-    matrix.w.z = DirectX::XMVectorGetZ(_matrix.r[3]);
-    matrix.w.w = DirectX::XMVectorGetW(_matrix.r[3]);
-
-    return matrix;
+#define DX_GET_X(v) DirectX::XMVectorGetX(_matrix.r[v])
+#define DX_GET_Y(v) DirectX::XMVectorGetY(_matrix.r[v])
+#define DX_GET_Z(v) DirectX::XMVectorGetZ(_matrix.r[v])
+#define DX_GET_W(v) DirectX::XMVectorGetW(_matrix.r[v])
+    return
+	{
+		DX_GET_X(0),   DX_GET_Y(0),   DX_GET_Z(0),   DX_GET_W(0),
+		DX_GET_X(1),   DX_GET_Y(1),   DX_GET_Z(1),   DX_GET_W(1),
+		DX_GET_X(2),   DX_GET_Y(2),   DX_GET_Z(2),   DX_GET_W(2),
+		DX_GET_X(3),   DX_GET_Y(3),   DX_GET_Z(3),   DX_GET_W(3),
+	};
+#undef DX_GET_X
+#undef DX_GET_Y
+#undef DX_GET_Z
+#undef DX_GET_W
 }
 //----------------------------------------------------------------------------------------------------------------------
-bool TMatrix4f::CompareMatrixToDirectXMatrix(const TVector3f& _m1, DirectX::XMMATRIX _m2)
+bool TMatrix4f::CompareMatrixToDirectXMatrix(const TMatrix4f& _m1, DirectX::XMMATRIX _m2)
 {
-    _m2:
+    TMatrix4f MatrixDirectX = FromDirectXMatrix(_m2);
+    TMatrix4f MatrixDirectXTransposed = Transpose(MatrixDirectX);
+    return _m1 == MatrixDirectXTransposed;
 }
 //----------------------------------------------------------------------------------------------------------------------
 TMatrix4f TMatrix4f::MatrixTranslation(const TVector3f& _translation)
@@ -73,10 +73,10 @@ TMatrix4f TMatrix4f::MatrixRotationX(float _angle)
 {
     return
     {
-        1.0f,            0.0f,          0.0f,           0.0f,
+        1.0f,            0.0f,                  0.0f,                   0.0f,
         0.0f,            Math::Cos(_angle),    -Math::Sin(_angle),   0.0f,
         0.0f,            Math::Sin(_angle),   Math::Cos(_angle),     0.0f,
-        0.0f,            0.0f,          0.0f,           1.0f,
+        0.0f,            0.0f,                  0.0f,               1.0f,
     };
 }
 //----------------------------------------------------------------------------------------------------------------------
@@ -85,9 +85,9 @@ TMatrix4f TMatrix4f::MatrixRotationY(float _angle)
     return
     {
         Math::Cos(_angle),      0.0f,          Math::Sin(_angle),    0.0f,
-        0.0f,            1.0f,          0.0f,           0.0f,
+        0.0f,                   1.0f,          0.0f,                 0.0f,
         -Math::Sin(_angle),    0.0f,          Math::Cos(_angle),     0.0f,
-        0.0f,            0.0f,          1.0f,           0.0f,
+        0.0f,                 0.0f,          0.0f,                  1.0f,
     };
 }
 //----------------------------------------------------------------------------------------------------------------------
@@ -95,10 +95,10 @@ TMatrix4f TMatrix4f::MatrixRotationZ(float _angle)
 {
     return
     {
-		Math::Cos(_angle),     -Math::Sin(_angle),     0.0f,           0.0f,
-		Math::Sin(_angle),    Math::Cos(_angle),       0.0f,           0.0f,
-		0.0f,            0.0f,              1.0f,           0.0f,
-		0.0f,            0.0f,              0.0f,           1.0f,
+		Math::Cos(_angle),   -Math::Sin(_angle),     0.0f,           0.0f,
+		Math::Sin(_angle),   Math::Cos(_angle),       0.0f,           0.0f,
+		0.0f,               0.0f,                   1.0f,           0.0f,
+		0.0f,               0.0f,                   0.0f,           1.0f,
     };
 }
 //----------------------------------------------------------------------------------------------------------------------
