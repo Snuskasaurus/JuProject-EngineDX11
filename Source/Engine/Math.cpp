@@ -128,21 +128,22 @@ TMatrix4f TMatrix4f::MatrixScaleUniform(float _scale)
 // https://medium.com/@carmencincotti/lets-look-at-magic-lookat-matrices-c77e53ebdf78
 TMatrix4f TMatrix4f::MatrixLookAtRH(const TVector3f& _cameraPosition, const TVector3f& _lookAtPosition, const TVector3f& _up)
 {
-    TVector3f t = _cameraPosition;
-    TVector3f f = TVector3f::Normalize(_cameraPosition - _lookAtPosition);
-    TVector3f r = TVector3f::Normalize(TVector3f::Cross(_up, f)); // Right vector
-    TVector3f u = TVector3f::Normalize(TVector3f::Cross(f, r)); // Guarantee that we have a vector pointing up
+    TVector3f cameraForward = TVector3f::Normalize(_cameraPosition - _lookAtPosition);
+    TVector3f cameraRight = TVector3f::Normalize(TVector3f::Cross(_up, cameraForward));
+    TVector3f cameraUp = TVector3f::Normalize(TVector3f::Cross(cameraForward, cameraRight));
 
-    assert(f.IsNormalized());
-    assert(r.IsNormalized());
-    assert(u.IsNormalized());
-
+#if _DEBUG
+    assert(cameraForward.IsNormalized());
+    assert(cameraRight.IsNormalized());
+    assert(cameraUp.IsNormalized());
+#endif
+    
     return
     {
-        r.x,            r.y,           r.z,          TVector3f::Dot(-t, r),
-        u.x,            u.y,           u.z,          TVector3f::Dot(-t, u),
-        f.x,            f.y,           f.z,          TVector3f::Dot(-t, f),
-        0.0f,   0.0f,      0.0f,         1.0f,
+        cameraRight.x,         cameraRight.y,       cameraRight.z,          TVector3f::Dot(_cameraPosition, cameraRight),
+        cameraUp.x,            cameraUp.y,          cameraUp.z,             TVector3f::Dot(_cameraPosition, cameraUp),
+        cameraForward.x,       cameraForward.y,     cameraForward.z,        TVector3f::Dot(_cameraPosition, cameraForward),
+        0.0f,              0.0f,            0.0f,               1.0f,
     };
 }
 //----------------------------------------------------------------------------------------------------------------------
