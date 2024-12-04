@@ -11,6 +11,7 @@ namespace Math // To avoid having CMath included everywhere
 {
     FORCE_INLINE float Square(const float _f);
     FORCE_INLINE float Sin(const float _f);
+    FORCE_INLINE float Tan(const float _f);
     FORCE_INLINE float Cos(const float _f);
     FORCE_INLINE float Abs(const float _f);
 }
@@ -32,17 +33,16 @@ struct TVector3f
     float y = 0.0f;
     float z = 0.0f;
 
+    TVector3f() : x(0.0f), y(0.0f), z(0.0f) {}
+    TVector3f(float _x, float _y) : x(_x), y(_y), z(0.0f) {}
+    TVector3f(float _x, float _y, float _z) : x(_x), y(_y), z(_z) {}
+    
     DirectX::FXMVECTOR ToDXVec() const
     {
         DirectX::FXMVECTOR NewVec = { x, y, z, 0.0f };
         return NewVec;
     }
     
-    FORCE_INLINE bool IsNormalized() const
-    {
-        const float squareLength = TVector3f::SquareLength(*this);
-        return squareLength >= 1.0f - VEC_PRECISION && squareLength <= 1.0f + VEC_PRECISION;
-    }
     FORCE_INLINE static float Dot(const TVector3f& _v1, const TVector3f& _v2)
     {
         return _v1.x * _v2.x + _v1.y * _v2.y + _v1.z * _v2.z;
@@ -71,7 +71,12 @@ struct TVector3f
         const float length = TVector3f::Length(_v);
         return {_v.x / length, _v.y / length, _v.z / length };
     }
-     FORCE_INLINE TVector3f operator-() const
+    FORCE_INLINE bool IsNormalized() const
+    {
+        const float squareLength = TVector3f::SquareLength(*this);
+        return Math::Abs(squareLength) - VEC_PRECISION <= 1.0f;
+    }
+    FORCE_INLINE TVector3f operator-() const
     {
         return { -x, -y, -z };
     }
@@ -213,9 +218,3 @@ struct alignas(16) TMatrix4f
 	}
 };
 //---------------------------------------------------------------------------------------------------------------------------------------------------------
-
-
-namespace ValidationTest
-{
-    void Matrices();
-}

@@ -14,6 +14,11 @@ float Math::Sin(const float _f)
     return sinf(_f);
 }
 //----------------------------------------------------------------------------------------------------------------------
+float Math::Tan(const float _f)
+{
+    return tanf(_f);
+}
+//----------------------------------------------------------------------------------------------------------------------
 float Math::Cos(const float _f)
 {
     return cosf(_f);
@@ -147,14 +152,20 @@ TMatrix4f TMatrix4f::MatrixLookAtRH(const TVector3f& _cameraPosition, const TVec
     };
 }
 //----------------------------------------------------------------------------------------------------------------------
+// http://perry.cz/articles/ProjectionMatrix.xhtml#eq_pattern_matrix
 TMatrix4f TMatrix4f::MatrixPerspectiveFovRH(float _fovAngleY, float _aspectRatio, float _nearZ, float _farZ)
 {
+    float B = 1.0f / Math::Tan(_fovAngleY * 0.5f);
+    float A = _aspectRatio * B;
+    float C = _farZ / (_farZ - _nearZ);
+    float D = -1.0f;
+    float E = _nearZ * C;
     return
 	{
-		0.0f,            0.0f,           0.0f,          0.0f,
-		0.0f,            0.0f,           0.0f,          0.0f,
-		0.0f,            0.0f,           0.0f,          0.0f,
-		0.0f,            0.0f,           0.0f,          1.0f,
+		A,            0.0f,           0.0f,          0.0f,
+		0.0f,            B,           0.0f,          0.0f,
+		0.0f,            0.0f,           C,          E,
+		0.0f,            0.0f,           D,          1.0f,
 	};
 }
 //----------------------------------------------------------------------------------------------------------------------
