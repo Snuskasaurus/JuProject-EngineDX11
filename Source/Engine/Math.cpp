@@ -76,34 +76,40 @@ TMatrix4f TMatrix4f::MatrixTranslation(const TVector3f& _translation)
 //----------------------------------------------------------------------------------------------------------------------
 TMatrix4f TMatrix4f::MatrixRotationX(float _angle)
 {
+	const float cos = Math::Cos(_angle);
+	const float sin = Math::Sin(_angle);
     return
     {
-        { 1.0f,            0.0f,                  0.0f,                 0.0f },
-        { 0.0f,            Math::Cos(_angle),     -Math::Sin(_angle),   0.0f },
-        { 0.0f,            Math::Sin(_angle),     Math::Cos(_angle),    0.0f },
-        { 0.0f,            0.0f,                  0.0f,                 1.0f }
+		{ 1.0f,     0.0f,   0.0f,   0.0f },
+		{ 0.0f,     cos,    -sin,   0.0f },
+		{ 0.0f,     sin,    cos,    0.0f },
+		{ 0.0f,     0.0f,   0.0f,   1.0f }
     };
 }
 //----------------------------------------------------------------------------------------------------------------------
 TMatrix4f TMatrix4f::MatrixRotationY(float _angle)
 {
+    const float cos = Math::Cos(_angle);
+    const float sin = Math::Sin(_angle);
     return
     {
-		{ Math::Cos(_angle),     0.0f,          Math::Sin(_angle),      0.0f },
-		{ 0.0f,                  1.0f,          0.0f,                   0.0f },
-		{ -Math::Sin(_angle),    0.0f,          Math::Cos(_angle),      0.0f },
-		{ 0.0f,                  0.0f,          0.0f,                   1.0f }
+		{ cos,     0.0f,     sin,      0.0f },
+		{ 0.0f,    1.0f,     0.0f,     0.0f },
+		{ -sin,    0.0f,     cos,      0.0f },
+		{ 0.0f,    0.0f,     0.0f,     1.0f }
     };
 }
 //----------------------------------------------------------------------------------------------------------------------
 TMatrix4f TMatrix4f::MatrixRotationZ(float _angle)
 {
+	const float cos = Math::Cos(_angle);
+	const float sin = Math::Sin(_angle);
     return
     {
-		{ Math::Cos(_angle),   -Math::Sin(_angle),     0.0f,           0.0f },
-		{ Math::Sin(_angle),   Math::Cos(_angle),      0.0f,           0.0f },
-		{ 0.0f,                0.0f,                   1.0f,           0.0f },
-		{ 0.0f,                0.0f,                   0.0f,           1.0f }
+		{ cos,      -sin,   0.0f,   0.0f },
+		{ sin,      cos,    0.0f,   0.0f },
+		{ 0.0f,     0.0f,   1.0f,   0.0f },
+		{ 0.0f,     0.0f,   0.0f,   1.0f }
     };
 }
 //----------------------------------------------------------------------------------------------------------------------
@@ -129,8 +135,6 @@ TMatrix4f TMatrix4f::MatrixScaleUniform(float _scale)
     };
 }
 //----------------------------------------------------------------------------------------------------------------------
-// https://www.scratchapixel.com/lessons/mathematics-physics-for-computer-graphics/lookat-function/framing-lookat-function.html
-// https://medium.com/@carmencincotti/lets-look-at-magic-lookat-matrices-c77e53ebdf78
 TMatrix4f TMatrix4f::MatrixLookAtRH(const TVector3f& _cameraPosition, const TVector3f& _lookAtPosition, const TVector3f& _up)
 {
     TVector3f cameraForward = TVector3f::Normalize(_cameraPosition - _lookAtPosition);
@@ -145,14 +149,13 @@ TMatrix4f TMatrix4f::MatrixLookAtRH(const TVector3f& _cameraPosition, const TVec
     
     return
     {
-        cameraRight.x,         cameraRight.y,       cameraRight.z,          TVector3f::Dot(_cameraPosition, cameraRight),
-        cameraUp.x,            cameraUp.y,          cameraUp.z,             TVector3f::Dot(_cameraPosition, cameraUp),
-        cameraForward.x,       cameraForward.y,     cameraForward.z,        TVector3f::Dot(_cameraPosition, cameraForward),
-        0.0f,              0.0f,            0.0f,               1.0f,
+        { cameraRight.x,         cameraRight.y,       cameraRight.z,          TVector3f::Dot(_cameraPosition, cameraRight) },
+        { cameraUp.x,            cameraUp.y,          cameraUp.z,             TVector3f::Dot(_cameraPosition, cameraUp) },
+        { cameraForward.x,       cameraForward.y,     cameraForward.z,        TVector3f::Dot(_cameraPosition, cameraForward) },
+        { 0.0f,                  0.0f,                0.0f,                   1.0f }
     };
 }
 //----------------------------------------------------------------------------------------------------------------------
-// http://perry.cz/articles/ProjectionMatrix.xhtml#eq_pattern_matrix
 TMatrix4f TMatrix4f::MatrixPerspectiveFovRH(float _fovAngleY, float _aspectRatio, float _nearZ, float _farZ)
 {
     float B = 1.0f / Math::Tan(_fovAngleY * 0.5f);
@@ -162,10 +165,10 @@ TMatrix4f TMatrix4f::MatrixPerspectiveFovRH(float _fovAngleY, float _aspectRatio
     float E = _nearZ * C;
     return
 	{
-		A,            0.0f,           0.0f,          0.0f,
-		0.0f,            B,           0.0f,          0.0f,
-		0.0f,            0.0f,           C,          E,
-		0.0f,            0.0f,           D,          1.0f,
+		{ A,               0.0f,           0.0f,          0.0f },
+		{ 0.0f,            B,              0.0f,          0.0f },
+		{ 0.0f,            0.0f,           C,             E },
+		{ 0.0f,            0.0f,           D,             1.0f }
 	};
 }
 //----------------------------------------------------------------------------------------------------------------------

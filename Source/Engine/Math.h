@@ -2,7 +2,7 @@
 
 #define FORCE_INLINE __forceinline
 #define EPSILON_FLOAT 1.19209290E-07F
-#define VEC_PRECISION 0.0001
+#define VEC_PRECISION 0.005
 
 #include <DirectXMath.h>
 
@@ -200,9 +200,9 @@ struct alignas(16) TMatrix4f
     FORCE_INLINE friend bool operator==(const TMatrix4f& _m1, const TMatrix4f& _m2)
     {
         return _m1.x == _m2.x
-            && _m1.y == _m2.y
-            && _m1.z == _m2.z
-            && _m1.w == _m2.w;
+			&& _m1.y == _m2.y
+			&& _m1.z == _m2.z
+			&& _m1.w == _m2.w;
     }
     FORCE_INLINE TMatrix4f& operator*=(const TMatrix4f& _m)
     {

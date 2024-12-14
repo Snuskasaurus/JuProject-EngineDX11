@@ -15,7 +15,7 @@ void TestValidation::RunTest_Matrix()
         assert(MatrixTranslation.z == XMMatrixTranslation.z);
         assert(MatrixTranslation.w == XMMatrixTranslation.w);
     }
-    
+
     // Testing MatrixRotationX
     {
         float Rotation = 99.0f;
@@ -27,7 +27,7 @@ void TestValidation::RunTest_Matrix()
         assert(MatrixRotationX.z == XMMatrixRotationX.z);
         assert(MatrixRotationX.w == XMMatrixRotationX.w);
     }
-    
+
     // Testing MatrixRotationY
     {
         float Rotation = 187.0f;
@@ -52,7 +52,7 @@ void TestValidation::RunTest_Matrix()
         assert(MatrixRotationZ.z == XMMatrixRotationZ.z);
         assert(MatrixRotationZ.w == XMMatrixRotationZ.w);
     }
-    
+
     // Testing MatrixScale
     {
         float scale = 166.0f;
@@ -66,25 +66,41 @@ void TestValidation::RunTest_Matrix()
         assert(MatrixScale.w == XMMatrixScaling.w);
     }
 
-    // Testing MatrixLookAtRH
-    // {
-    //     const TVector3f cameraPosition = { 12.0f, 36.0f, 25.0f };
-    //     const TVector3f lookAtPosition = { 0.0f, 100.0f, 1.0f };
-    //     const TVector3f up = { 0.0f, 0.0f, 1.0f };
-    //     TMatrix4f MatrixLookAtRH = TMatrix4f::MatrixLookAtRH(cameraPosition, lookAtPosition, up);
-    //     DirectX::XMMATRIX matrixDirectX = DirectX::XMMatrixLookAtRH(cameraPosition.ToDXVec(), lookAtPosition.ToDXVec(), up.ToDXVec());
-    //     
-    //     TMatrix4f XMMatrixLookAtRH = TMatrix4f::Transpose(TMatrix4f::FromDirectXMatrix(matrixDirectX));
-    //     assert(MatrixLookAtRH.x == XMMatrixLookAtRH.x);
-    //     assert(MatrixLookAtRH.y == XMMatrixLookAtRH.y);
-    //     assert(MatrixLookAtRH.z == XMMatrixLookAtRH.z);
-    //     assert(MatrixLookAtRH.w == XMMatrixLookAtRH.w);
-    // }
+	// Testing matrix multiplication
+	{
+		TVector3f Translation = { 10.0f, 5.0f, 3.0f };
+		float Rotation = 166.0f;
+		float scale = 166.0f;
 
-    const TVector3f cameraPosition = { 0, 0, 0 };
-    const TVector3f lookAtPosition = cameraPosition + TVector3f(10.0f, 0.0f, 0.0f);
-    const TVector3f up = { 0.0f, 1.0f, 0.0f };
-    TMatrix4f MatrixLookAtRH = TMatrix4f::MatrixLookAtRH(cameraPosition, lookAtPosition, up);
+		TMatrix4f MatrixTranslation = TMatrix4f::MatrixTranslation(Translation);
+		TMatrix4f MatrixRotationY = TMatrix4f::MatrixRotationY(Rotation);
+		TMatrix4f MatrixScale = TMatrix4f::MatrixScale(scale);
+        TMatrix4f MatrixResult = MatrixTranslation * MatrixRotationY * MatrixScale;
 
-    
+		DirectX::XMMATRIX MatrixTranslation_Dx = DirectX::XMMatrixTranslation(Translation.x, Translation.y, Translation.z);
+		DirectX::XMMATRIX MatrixRotationY_Dx = DirectX::XMMatrixRotationY(Rotation);
+		DirectX::XMMATRIX MatrixScale_Dx = DirectX::XMMatrixScaling(scale, scale, scale);
+        DirectX::XMMATRIX MatrixResult_Dx = MatrixScale_Dx * MatrixRotationY_Dx * MatrixTranslation_Dx;
+
+		TMatrix4f MatrixResultFromDirectX = TMatrix4f::Transpose(TMatrix4f::FromDirectXMatrix(MatrixResult_Dx));
+		assert(MatrixResult.x == MatrixResultFromDirectX.x);
+		assert(MatrixResult.y == MatrixResultFromDirectX.y);
+		assert(MatrixResult.z == MatrixResultFromDirectX.z);
+		assert(MatrixResult.w == MatrixResultFromDirectX.w);
+	}
+
+	//// Testing MatrixLookAtRH
+	//{
+	//	const TVector3f cameraPosition = { 12.0f, 36.0f, 25.0f };
+	//	const TVector3f lookAtPosition = { 0.0f, 100.0f, 1.0f };
+	//	const TVector3f up = { 0.0f, 0.0f, 1.0f };
+	//	TMatrix4f MatrixLookAtRH = TMatrix4f::MatrixLookAtRH(cameraPosition, lookAtPosition, up);
+	//	DirectX::XMMATRIX matrixDirectX = DirectX::XMMatrixLookAtRH(cameraPosition.ToDXVec(), lookAtPosition.ToDXVec(), up.ToDXVec());
+
+	//	TMatrix4f XMMatrixLookAtRH = TMatrix4f::Transpose(TMatrix4f::FromDirectXMatrix(matrixDirectX));
+	//	assert(MatrixLookAtRH.x == XMMatrixLookAtRH.x);
+	//	assert(MatrixLookAtRH.y == XMMatrixLookAtRH.y);
+	//	assert(MatrixLookAtRH.z == XMMatrixLookAtRH.z);
+	//	assert(MatrixLookAtRH.w == XMMatrixLookAtRH.w);
+	//}
 }
