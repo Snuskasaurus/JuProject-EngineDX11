@@ -113,19 +113,29 @@ struct TVector4f
     float z = 0.0f;
     float w = 0.0f;
 
+    TVector4f() = default;
+    TVector4f(const float _x, const float _y, const float _z, const float _w) : x(_x), y(_y), z(_z), w(_w) {}
+    ~TVector4f() = default;
+    
     FORCE_INLINE static float Dot(TVector4f _v1, TVector4f _v2)
     {
-        return _v1.x * _v2.x + _v1.y * _v2.y + _v1.z * _v2.z + _v1.w * _v2.w;
+        return _v1.x * _v2.x
+             + _v1.y * _v2.y
+             + _v1.z * _v2.z
+             + _v1.w * _v2.w;
     }
     
     FORCE_INLINE friend bool operator==(const TVector4f& _v1, const TVector4f& _v2)
     {
-        const float f = Math::Abs(_v1.x - _v2.x) + Math::Abs(_v1.y - _v2.y) + Math::Abs(_v1.z - _v2.z);
+        const float f = Math::Abs(_v1.x - _v2.x)
+                      + Math::Abs(_v1.y - _v2.y)
+                      + Math::Abs(_v1.z - _v2.z)
+                      + Math::Abs(_v1.w - _v2.w);
         return f < VEC_PRECISION;
     }
     FORCE_INLINE TVector4f operator-() const
     {
-        return { -x, -y, -z };
+        return { -x, -y, -z, -w };
     }
     FORCE_INLINE TVector4f& operator+=(const TVector4f& _v)
     {
