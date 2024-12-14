@@ -45,10 +45,10 @@ TMatrix4f TMatrix4f::FromDirectXMatrix(const DirectX::XMMATRIX _matrix)
 #define DX_GET_W(v) DirectX::XMVectorGetW(_matrix.r[v])
     return
 	{
-		DX_GET_X(0),   DX_GET_Y(0),   DX_GET_Z(0),   DX_GET_W(0),
-		DX_GET_X(1),   DX_GET_Y(1),   DX_GET_Z(1),   DX_GET_W(1),
-		DX_GET_X(2),   DX_GET_Y(2),   DX_GET_Z(2),   DX_GET_W(2),
-		DX_GET_X(3),   DX_GET_Y(3),   DX_GET_Z(3),   DX_GET_W(3),
+		{ DX_GET_X(0),   DX_GET_Y(0),   DX_GET_Z(0),   DX_GET_W(0) },
+		{ DX_GET_X(1),   DX_GET_Y(1),   DX_GET_Z(1),   DX_GET_W(1) },
+		{ DX_GET_X(2),   DX_GET_Y(2),   DX_GET_Z(2),   DX_GET_W(2) },
+		{ DX_GET_X(3),   DX_GET_Y(3),   DX_GET_Z(3),   DX_GET_W(3) }
 	};
 #undef DX_GET_X
 #undef DX_GET_Y
@@ -67,10 +67,10 @@ TMatrix4f TMatrix4f::MatrixTranslation(const TVector3f& _translation)
 {
     return
     {
-        1.0f,            0.0f,           0.0f,          _translation.x,
-        0.0f,            1.0f,           0.0f,          _translation.y,
-        0.0f,            0.0f,           1.0f,          _translation.z,
-        0.0f,            0.0f,           0.0f,          1.0f,
+        { 1.0f,            0.0f,           0.0f,          _translation.x },
+        { 0.0f,            1.0f,           0.0f,          _translation.y },
+        { 0.0f,            0.0f,           1.0f,          _translation.z },
+        { 0.0f,            0.0f,           0.0f,          1.0f,          }
     };
 }
 //----------------------------------------------------------------------------------------------------------------------
@@ -78,10 +78,10 @@ TMatrix4f TMatrix4f::MatrixRotationX(float _angle)
 {
     return
     {
-        1.0f,            0.0f,                  0.0f,                   0.0f,
-        0.0f,            Math::Cos(_angle),    -Math::Sin(_angle),   0.0f,
-        0.0f,            Math::Sin(_angle),   Math::Cos(_angle),     0.0f,
-        0.0f,            0.0f,                  0.0f,               1.0f,
+        { 1.0f,            0.0f,                  0.0f,                 0.0f },
+        { 0.0f,            Math::Cos(_angle),     -Math::Sin(_angle),   0.0f },
+        { 0.0f,            Math::Sin(_angle),     Math::Cos(_angle),    0.0f },
+        { 0.0f,            0.0f,                  0.0f,                 1.0f }
     };
 }
 //----------------------------------------------------------------------------------------------------------------------
@@ -89,10 +89,10 @@ TMatrix4f TMatrix4f::MatrixRotationY(float _angle)
 {
     return
     {
-        Math::Cos(_angle),      0.0f,          Math::Sin(_angle),    0.0f,
-        0.0f,                   1.0f,          0.0f,                 0.0f,
-        -Math::Sin(_angle),    0.0f,          Math::Cos(_angle),     0.0f,
-        0.0f,                 0.0f,          0.0f,                  1.0f,
+		{ Math::Cos(_angle),     0.0f,          Math::Sin(_angle),      0.0f },
+		{ 0.0f,                  1.0f,          0.0f,                   0.0f },
+		{ -Math::Sin(_angle),    0.0f,          Math::Cos(_angle),      0.0f },
+		{ 0.0f,                  0.0f,          0.0f,                   1.0f }
     };
 }
 //----------------------------------------------------------------------------------------------------------------------
@@ -100,10 +100,10 @@ TMatrix4f TMatrix4f::MatrixRotationZ(float _angle)
 {
     return
     {
-		Math::Cos(_angle),   -Math::Sin(_angle),     0.0f,           0.0f,
-		Math::Sin(_angle),   Math::Cos(_angle),       0.0f,           0.0f,
-		0.0f,               0.0f,                   1.0f,           0.0f,
-		0.0f,               0.0f,                   0.0f,           1.0f,
+		{ Math::Cos(_angle),   -Math::Sin(_angle),     0.0f,           0.0f },
+		{ Math::Sin(_angle),   Math::Cos(_angle),      0.0f,           0.0f },
+		{ 0.0f,                0.0f,                   1.0f,           0.0f },
+		{ 0.0f,                0.0f,                   0.0f,           1.0f }
     };
 }
 //----------------------------------------------------------------------------------------------------------------------
@@ -111,10 +111,10 @@ TMatrix4f TMatrix4f::MatrixScale(float _scale)
 {
     return
     {                                                                  
-		_scale,           0.0f,         0.0f,           0.0f ,
-		0.0f,            _scale,        0.0f,           0.0f ,
-        0.0f,            0.0f,          _scale,         0.0f ,
-        0.0f,            0.0f,          0.0f,           1.0f ,
+		{ _scale,           0.0f,         0.0f,           0.0f },
+		{ 0.0f,            _scale,        0.0f,           0.0f },
+        { 0.0f,            0.0f,          _scale,         0.0f },
+        { 0.0f,            0.0f,          0.0f,           1.0f }
     };
 }
 //----------------------------------------------------------------------------------------------------------------------
@@ -122,10 +122,10 @@ TMatrix4f TMatrix4f::MatrixScaleUniform(float _scale)
 {
     return
     {                                                                  
-        0.0f,            0.0f,          0.0f,           0.0f ,
-        0.0f,            0.0f,          0.0f,           0.0f ,
-        0.0f,            0.0f,          0.0f,           0.0f ,
-        0.0f,            0.0f,          0.0f,           1.0f / _scale ,
+        { 0.0f,            0.0f,          0.0f,           0.0f },
+        { 0.0f,            0.0f,          0.0f,           0.0f },
+        { 0.0f,            0.0f,          0.0f,           0.0f },
+        { 0.0f,            0.0f,          0.0f,           1.0f / _scale }
     };
 }
 //----------------------------------------------------------------------------------------------------------------------

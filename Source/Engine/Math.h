@@ -190,10 +190,10 @@ struct alignas(16) TMatrix4f
     {
         return
         {
-           _m.x.x,  _m.y.x,  _m.z.x,  _m.w.x,
-           _m.x.y,  _m.y.y,  _m.z.y,  _m.w.y,
-           _m.x.z,  _m.y.z,  _m.z.z,  _m.w.z,
-           _m.x.w,  _m.y.w,  _m.z.w,  _m.w.w,
+            { _m.x.x,  _m.y.x,  _m.z.x,  _m.w.x },
+            { _m.x.y,  _m.y.y,  _m.z.y,  _m.w.y },
+            { _m.x.z,  _m.y.z,  _m.z.z,  _m.w.z },
+            { _m.x.w,  _m.y.w,  _m.z.w,  _m.w.w }
         };
     }
 
